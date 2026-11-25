@@ -1,0 +1,2886 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Money Mission: ภารกิจพิชิตเงิน</title>
+
+  <!-- Google Fonts: Kanit & Sarabun -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Tailwind Custom Theme Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Kanit', 'Sarabun', 'sans-serif'],
+            body: ['Sarabun', 'Kanit', 'sans-serif'],
+          },
+          colors: {
+            brandOrange: '#FF7A00',
+            brandMint: '#10B981',
+            brandYellow: '#FACC15',
+            brandPurple: '#9333EA',
+            pastelPurple: '#C084FC',
+            creamBg: '#FFFBF5',
+          },
+          boxShadow: {
+            'playful': '0 6px 0 rgba(0, 0, 0, 0.12)',
+            'playful-orange': '0 5px 0 #C2410C',
+            'playful-mint': '0 5px 0 #047857',
+            'playful-purple': '0 5px 0 #6B21A8',
+            'playful-yellow': '0 5px 0 #CA8A04',
+            'card': '0 10px 25px -5px rgba(255, 122, 0, 0.08), 0 8px 10px -6px rgba(147, 51, 234, 0.06)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Kanit', 'Sarabun', sans-serif;
+      background-color: #FFFBF5;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(250, 204, 21, 0.12) 0%, transparent 25%),
+        radial-gradient(circle at 90% 15%, rgba(16, 185, 129, 0.10) 0%, transparent 25%),
+        radial-gradient(circle at 80% 85%, rgba(192, 132, 252, 0.12) 0%, transparent 30%);
+      overflow-x: hidden;
+    }
+
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(1.5deg); }
+    }
+    @keyframes coinBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      40% { transform: translateY(-10px) scale(1.1); }
+      60% { transform: translateY(-4px) scale(1.05); }
+    }
+    @keyframes sparkle {
+      0%, 100% { opacity: 0.4; transform: scale(0.85) rotate(0deg); }
+      50% { opacity: 1; transform: scale(1.2) rotate(18deg); }
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.92) translateY(8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .animate-float { animation: float 3.2s ease-in-out infinite; }
+    .animate-coin { animation: coinBounce 2.2s ease-in-out infinite; }
+    .animate-sparkle { animation: sparkle 2s ease-in-out infinite; }
+    .animate-pop { animation: popIn 0.3s ease-out forwards; }
+
+    /* Tactile Game Buttons */
+    .btn-game {
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .btn-game:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Custom Range Slider for Mission 1 */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 10px;
+      border-radius: 999px;
+      background: #E5E7EB;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #FF7A00;
+      border: 3px solid #FFF;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+    }
+
+    /* Confetti Particle */
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      z-index: 9999;
+      pointer-events: none;
+      border-radius: 3px;
+      animation: confettiFall 2.2s ease-out forwards;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #FFF7ED; }
+    ::-webkit-scrollbar-thumb { background: #FDBA74; border-radius: 999px; }
+  </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col pb-20 md:pb-0">
+
+  <!-- ==================== TOP NAVIGATION BAR ==================== -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b-2 border-orange-100 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+      <!-- Brand Logo -->
+      <button onclick="switchTab('dashboard')" class="flex items-center gap-2.5 text-left group focus:outline-none">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition">
+          <i class="fa-solid fa-piggy-bank text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-extrabold leading-tight bg-gradient-to-r from-orange-500 via-purple-600 to-emerald-500 bg-clip-text text-transparent">
+            Money Mission
+          </h1>
+          <p class="text-[11px] text-slate-500 font-medium -mt-0.5 hidden sm:block">ภารกิจพิชิตเงิน • เกมการเงินเพื่อการศึกษา</p>
+        </div>
+      </button>
+
+      <!-- Desktop Navigation Links -->
+      <nav class="hidden md:flex items-center gap-1.5 bg-orange-50/80 p-1.5 rounded-2xl border border-orange-100">
+        <button data-nav="dashboard" onclick="switchTab('dashboard')" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-house"></i> หน้าแรก
+        </button>
+        <button data-nav="wallet" onclick="switchTab('wallet')" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-wallet"></i> กระเป๋าเงิน
+        </button>
+        <button data-nav="missions" onclick="switchTab('missions')" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-flag-checkered"></i> ภารกิจ 5 ด่าน
+        </button>
+        <button data-nav="classroom" onclick="switchTab('classroom')" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-book-open"></i> ห้องเรียน
+        </button>
+        <button data-nav="report" onclick="switchTab('report')" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5">
+          <i class="fa-solid fa-chart-pie"></i> สรุปผล
+        </button>
+      </nav>
+
+      <!-- Quick Status Pill -->
+      <div class="flex items-center gap-2">
+        <div class="bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl flex items-center gap-1.5" title="เงินจำลองคงเหลือ">
+          <i class="fa-solid fa-coins text-yellow-500 animate-coin"></i>
+          <span id="header-balance" class="font-bold text-emerald-700 text-sm sm:text-base">฿1,000</span>
+        </div>
+        <button onclick="openProfileModal()" class="w-10 h-10 rounded-xl bg-purple-100 hover:bg-purple-200 text-purple-700 flex items-center justify-center transition" title="ตั้งค่าชื่อผู้เล่น">
+          <i class="fa-solid fa-user-pen"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== EDUCATIONAL NOTICE BANNER ==================== -->
+  <div class="bg-gradient-to-r from-purple-600 via-orange-500 to-emerald-500 text-white text-xs sm:text-sm py-1.5 px-4 text-center font-medium">
+    <i class="fa-solid fa-shield-heart mr-1"></i>
+    เกมจำลองการเงินเพื่อการศึกษา • ใช้เงินจำลองเท่านั้น ไม่เชื่อมต่อบัญชีธนาคารจริง และบันทึกข้อมูลไว้ในเบราว์เซอร์นี้เท่านั้น
+  </div>
+
+  <!-- ==================== MAIN CONTENT CONTAINER ==================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ========================================================= -->
+    <!-- TAB 1: DASHBOARD                                          -->
+    <!-- ========================================================= -->
+    <section id="tab-dashboard" class="tab-section space-y-6 animate-pop">
+      <!-- Hero Mascot Greeting Banner -->
+      <div class="bg-gradient-to-br from-orange-400 via-orange-500 to-amber-500 rounded-3xl p-5 sm:p-7 text-white shadow-card relative overflow-hidden">
+        <!-- Decorative Sparkles -->
+        <i class="fa-solid fa-star text-yellow-200/50 text-3xl absolute top-4 right-8 animate-sparkle"></i>
+        <i class="fa-solid fa-coins text-yellow-200/30 text-5xl absolute bottom-3 right-24"></i>
+
+        <div class="flex flex-col md:flex-row items-center gap-5 relative z-10">
+          <!-- Mascot "น้องสตางค์" Inline SVG -->
+          <div class="shrink-0 animate-float">
+            <svg width="116" height="116" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="น้องสตางค์ กระปุกออมสิน">
+              <!-- Coin going into slot -->
+              <circle cx="70" cy="20" r="13" fill="#FACC15" stroke="#CA8A04" stroke-width="3"/>
+              <text x="70" y="25" text-anchor="middle" fill="#92400E" font-size="14" font-weight="bold" font-family="Kanit">฿</text>
+              <!-- Ears -->
+              <ellipse cx="42" cy="48" rx="12" ry="15" transform="rotate(-20 42 48)" fill="#F9A8D4" stroke="#BE185D" stroke-width="3"/>
+              <ellipse cx="98" cy="48" rx="12" ry="15" transform="rotate(20 98 48)" fill="#F9A8D4" stroke="#BE185D" stroke-width="3"/>
+              <!-- Piggy Body -->
+              <ellipse cx="70" cy="80" rx="46" ry="38" fill="#FBCFE8" stroke="#BE185D" stroke-width="3.5"/>
+              <!-- Coin Slot -->
+              <rect x="56" y="47" width="28" height="5" rx="2.5" fill="#9D174D"/>
+              <!-- Feet -->
+              <rect x="42" y="110" width="14" height="14" rx="6" fill="#F472B6" stroke="#BE185D" stroke-width="3"/>
+              <rect x="84" y="110" width="14" height="14" rx="6" fill="#F472B6" stroke="#BE185D" stroke-width="3"/>
+              <!-- Cheeks -->
+              <circle cx="43" cy="84" r="6" fill="#F472B6" opacity="0.6"/>
+              <circle cx="97" cy="84" r="6" fill="#F472B6" opacity="0.6"/>
+              <!-- Eyes -->
+              <circle cx="52" cy="73" r="5" fill="#1E293B"/>
+              <circle cx="53.5" cy="71.5" r="1.8" fill="#FFFFFF"/>
+              <circle cx="88" cy="73" r="5" fill="#1E293B"/>
+              <circle cx="89.5" cy="71.5" r="1.8" fill="#FFFFFF"/>
+              <!-- Snout -->
+              <ellipse cx="70" cy="85" rx="14" ry="10" fill="#F9A8D4" stroke="#BE185D" stroke-width="2.5"/>
+              <circle cx="65" cy="85" r="2.3" fill="#9D174D"/>
+              <circle cx="75" cy="85" r="2.3" fill="#9D174D"/>
+              <!-- Smile -->
+              <path d="M62 98 Q70 105 78 98" stroke="#9D174D" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+              <!-- Hero Cape -->
+              <path d="M26 84 Q14 95 20 112 Q32 108 38 100" fill="#9333EA" stroke="#6B21A8" stroke-width="2.5"/>
+            </svg>
+          </div>
+
+          <div class="flex-1 text-center md:text-left">
+            <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs sm:text-sm font-medium mb-2">
+              <i class="fa-solid fa-crown text-yellow-300"></i>
+              <span id="dash-level-badge">ระดับ 1: นักวางแผนมือใหม่</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold">
+              สวัสดี, <span id="dash-player-name" class="underline decoration-yellow-300 decoration-4 underline-offset-4">ผู้กล้าการเงิน</span>!
+            </h2>
+            <p id="dash-mascot-speech" class="mt-2 bg-white/95 text-slate-700 rounded-2xl px-4 py-2.5 text-sm sm:text-base shadow-sm inline-block font-body">
+              "สวัสดี! เราชื่อ <strong>น้องสตางค์</strong> พร้อมจะออกผจญภัยพิชิตภารกิจการเงิน 5 ด่านแล้วหรือยัง?"
+            </p>
+          </div>
+
+          <!-- Score & Stars Box -->
+          <div class="grid grid-cols-3 md:grid-cols-1 gap-2 shrink-0 w-full md:w-44">
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-2.5 text-center border border-white/30">
+              <div class="text-xs text-orange-50">คะแนนความรู้</div>
+              <div class="text-xl font-extrabold"><i class="fa-solid fa-bolt text-yellow-300 mr-1"></i><span id="dash-score">0</span></div>
+            </div>
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-2.5 text-center border border-white/30">
+              <div class="text-xs text-orange-50">เหรียญรางวัล</div>
+              <div class="text-xl font-extrabold"><i class="fa-solid fa-medal text-yellow-300 mr-1"></i><span id="dash-coins">0</span></div>
+            </div>
+            <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-2.5 text-center border border-white/30">
+              <div class="text-xs text-orange-50">ดาวภารกิจ</div>
+              <div class="text-xl font-extrabold"><i class="fa-solid fa-star text-yellow-300 mr-1"></i><span id="dash-stars">0</span>/15</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Financial Summary Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Balance -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 border-2 border-emerald-100 shadow-card">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs sm:text-sm font-semibold text-slate-500">เงินจำลองคงเหลือ</span>
+            <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+          </div>
+          <div id="dash-balance" class="text-2xl sm:text-3xl font-extrabold text-emerald-600">฿1,000</div>
+          <p class="text-xs text-slate-400 mt-1">พร้อมใช้จ่ายและออม</p>
+        </div>
+
+        <!-- Total Income -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 border-2 border-sky-100 shadow-card">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs sm:text-sm font-semibold text-slate-500">รายรับรวม</span>
+            <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+            </div>
+          </div>
+          <div id="dash-income" class="text-2xl sm:text-3xl font-extrabold text-sky-600">฿1,000</div>
+          <p class="text-xs text-slate-400 mt-1">รวมทุกหมวดหมู่รายรับ</p>
+        </div>
+
+        <!-- Total Expense -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 border-2 border-rose-100 shadow-card">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs sm:text-sm font-semibold text-slate-500">รายจ่ายรวม</span>
+            <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-500 flex items-center justify-center">
+              <i class="fa-solid fa-arrow-trend-down"></i>
+            </div>
+          </div>
+          <div id="dash-expense" class="text-2xl sm:text-3xl font-extrabold text-rose-500">฿0</div>
+          <p class="text-xs text-slate-400 mt-1">รวมทุกหมวดหมู่รายจ่าย</p>
+        </div>
+
+        <!-- Savings -->
+        <div class="bg-white rounded-3xl p-4 sm:p-5 border-2 border-purple-100 shadow-card">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs sm:text-sm font-semibold text-slate-500">เงินออมสะสม</span>
+            <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center">
+              <i class="fa-solid fa-piggy-bank"></i>
+            </div>
+          </div>
+          <div id="dash-savings" class="text-2xl sm:text-3xl font-extrabold text-purple-600">฿0</div>
+          <p class="text-xs text-slate-400 mt-1">เก็บออมในกระปุกน้องสตางค์</p>
+        </div>
+      </div>
+
+      <!-- Progress, Active Mission & Savings Goal Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Game Progress & Current Mission -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-orange-100 shadow-card flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-rocket text-orange-500"></i> ความคืบหน้าภารกิจพิชิตเงิน
+              </h3>
+              <span id="dash-mission-count" class="text-sm font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">0 / 5 ด่าน</span>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full h-4 bg-orange-100 rounded-full overflow-hidden mb-4">
+              <div id="dash-progress-bar" class="h-full bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+
+            <!-- Active Mission Card -->
+            <div class="bg-orange-50/80 border border-orange-200 rounded-2xl p-4">
+              <div class="text-xs font-bold text-orange-500 uppercase tracking-wide mb-1">ภารกิจถัดไปของคุณ</div>
+              <div id="dash-next-mission-title" class="text-lg font-bold text-slate-800">ด่านที่ 1: นักวางแผนรายรับรายจ่าย</div>
+              <p id="dash-next-mission-desc" class="text-sm text-slate-600 mt-1 font-body">จัดสรรงบประมาณ ฿1,000 ให้เพียงพอตลอด 7 วัน</p>
+            </div>
+          </div>
+
+          <button onclick="goToNextMission()" class="mt-4 w-full py-3.5 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-base shadow-playful-orange btn-game flex items-center justify-center gap-2">
+            <i class="fa-solid fa-play"></i> ลุยภารกิจเลย!
+          </button>
+        </div>
+
+        <!-- Savings Goal Card -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-purple-100 shadow-card flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-bullseye text-purple-600"></i> เป้าหมายการออมของคุณ
+              </h3>
+              <span id="dash-goal-percent" class="text-sm font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded-full">0%</span>
+            </div>
+
+            <div class="bg-purple-50/80 border border-purple-200 rounded-2xl p-4 mb-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div id="dash-goal-name" class="text-lg font-bold text-purple-900">ซื้อกระเป๋านักเรียนใบใหม่</div>
+                  <div class="text-xs sm:text-sm text-purple-700 mt-0.5">
+                    ออมแล้ว <strong id="dash-goal-current">฿0</strong> จากเป้าหมาย <strong id="dash-goal-target">฿500</strong>
+                  </div>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-purple-200/70 text-purple-700 flex items-center justify-center text-2xl">
+                  <i class="fa-solid fa-gift"></i>
+                </div>
+              </div>
+              <div class="w-full h-3.5 bg-purple-200 rounded-full overflow-hidden mt-3">
+                <div id="dash-goal-bar" class="h-full bg-gradient-to-r from-purple-500 to-emerald-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <div id="dash-goal-daily" class="text-xs text-purple-600 mt-2 font-medium">
+                แนะนำออมวันละ ฿36 เพื่อพิชิตเป้าหมายภายใน 14 วัน
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <button onclick="switchTab('wallet')" class="py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm shadow-playful-mint btn-game flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-piggy-bank"></i> หยอดกระปุกออมเงิน
+            </button>
+            <button onclick="openMission(3)" class="py-3 rounded-2xl bg-purple-500 hover:bg-purple-600 text-white font-bold text-sm shadow-playful-purple btn-game flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-sliders"></i> ตั้งเป้าหมายใหม่
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Large Menu Action Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <button onclick="switchTab('wallet')" class="bg-gradient-to-br from-emerald-400 to-teal-500 text-white rounded-3xl p-5 text-left shadow-playful-mint btn-game">
+          <div class="w-12 h-12 rounded-2xl bg-white/25 flex items-center justify-center text-2xl mb-3">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+          <div class="text-lg font-bold">กระเป๋าเงินจำลอง</div>
+          <div class="text-xs text-emerald-50 mt-1">จดรายรับ-รายจ่าย & ออมเงิน</div>
+        </button>
+
+        <button onclick="switchTab('missions')" class="bg-gradient-to-br from-orange-400 to-amber-500 text-white rounded-3xl p-5 text-left shadow-playful-orange btn-game">
+          <div class="w-12 h-12 rounded-2xl bg-white/25 flex items-center justify-center text-2xl mb-3">
+            <i class="fa-solid fa-gamepad"></i>
+          </div>
+          <div class="text-lg font-bold">ภารกิจ 5 ด่าน</div>
+          <div class="text-xs text-orange-50 mt-1">เล่นเกมฝึกคิดและรับดาว</div>
+        </button>
+
+        <button onclick="switchTab('classroom')" class="bg-gradient-to-br from-purple-500 to-indigo-500 text-white rounded-3xl p-5 text-left shadow-playful-purple btn-game">
+          <div class="w-12 h-12 rounded-2xl bg-white/25 flex items-center justify-center text-2xl mb-3">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div class="text-lg font-bold">ห้องเรียนการเงิน</div>
+          <div class="text-xs text-purple-100 mt-1">5 บทเรียนสั้นพร้อมควิซ</div>
+        </button>
+
+        <button onclick="switchTab('report')" class="bg-gradient-to-br from-yellow-400 to-amber-400 text-slate-900 rounded-3xl p-5 text-left shadow-playful-yellow btn-game">
+          <div class="w-12 h-12 rounded-2xl bg-white/40 flex items-center justify-center text-2xl mb-3">
+            <i class="fa-solid fa-chart-column"></i>
+          </div>
+          <div class="text-lg font-bold">สรุปผล & กราฟ</div>
+          <div class="text-xs text-slate-800 mt-1">ดูวิเคราะห์ผล & โหลด CSV</div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- TAB 2: VIRTUAL WALLET                                     -->
+    <!-- ========================================================= -->
+    <section id="tab-wallet" class="tab-section hidden space-y-6 animate-pop">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-wallet text-emerald-500"></i> กระเป๋าเงินจำลอง
+          </h2>
+          <p class="text-sm text-slate-500">บันทึกรายรับ รายจ่าย และออมเงินแบบเรียลไทม์ (ห้ามใช้จ่ายเกินเงินคงเหลือ)</p>
+        </div>
+        <button onclick="confirmResetGame()" class="self-start sm:self-auto px-4 py-2.5 rounded-2xl bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-sm transition flex items-center gap-2">
+          <i class="fa-solid fa-rotate-left"></i> ล้างข้อมูลและเริ่มเกมใหม่
+        </button>
+      </div>
+
+      <!-- Wallet Real-time Summary Strip -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="bg-emerald-500 text-white rounded-2xl p-4 shadow-md">
+          <div class="text-xs text-emerald-100">ยอดเงินคงเหลือ</div>
+          <div id="wallet-balance" class="text-2xl font-extrabold mt-0.5">฿1,000</div>
+        </div>
+        <div class="bg-white border-2 border-sky-100 rounded-2xl p-4">
+          <div class="text-xs text-slate-500">รายรับรวม</div>
+          <div id="wallet-income" class="text-2xl font-extrabold text-sky-600 mt-0.5">฿1,000</div>
+        </div>
+        <div class="bg-white border-2 border-rose-100 rounded-2xl p-4">
+          <div class="text-xs text-slate-500">รายจ่ายรวม</div>
+          <div id="wallet-expense" class="text-2xl font-extrabold text-rose-500 mt-0.5">฿0</div>
+        </div>
+        <div class="bg-white border-2 border-purple-100 rounded-2xl p-4">
+          <div class="text-xs text-slate-500">เงินออมสะสม</div>
+          <div id="wallet-savings" class="text-2xl font-extrabold text-purple-600 mt-0.5">฿0</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left Column: Forms -->
+        <div class="lg:col-span-5 space-y-5">
+          <!-- Add Transaction Form -->
+          <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-orange-100 shadow-card">
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+              <i class="fa-solid fa-circle-plus text-orange-500"></i> บันทึกรายรับ / รายจ่าย
+            </h3>
+
+            <!-- Type Toggle -->
+            <div class="grid grid-cols-2 gap-2 p-1.5 bg-slate-100 rounded-2xl mb-4">
+              <button type="button" id="btn-type-income" onclick="setTxType('income')" class="py-2.5 rounded-xl font-bold text-sm transition bg-emerald-500 text-white shadow">
+                <i class="fa-solid fa-plus-circle mr-1"></i> รายรับ
+              </button>
+              <button type="button" id="btn-type-expense" onclick="setTxType('expense')" class="py-2.5 rounded-xl font-bold text-sm transition text-slate-600 hover:bg-white">
+                <i class="fa-solid fa-minus-circle mr-1"></i> รายจ่าย
+              </button>
+            </div>
+
+            <form id="tx-form" onsubmit="handleAddTransaction(event)" class="space-y-3.5">
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">หมวดหมู่</label>
+                <select id="tx-category" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-orange-400 focus:outline-none bg-white text-sm font-medium"></select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">จำนวนเงิน (บาท)</label>
+                <input id="tx-amount" type="number" min="1" step="1" required placeholder="เช่น 50, 120" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-orange-400 focus:outline-none text-base font-bold" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">รายละเอียดรายการ</label>
+                <input id="tx-note" type="text" maxlength="80" required placeholder="เช่น ซื้อข้าวกลางวัน, ได้ค่าขนมรายสัปดาห์" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-orange-400 focus:outline-none text-sm" />
+              </div>
+              <button type="submit" class="w-full py-3.5 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold shadow-playful-orange btn-game">
+                <i class="fa-solid fa-floppy-disk mr-1"></i> บันทึกรายการ
+              </button>
+            </form>
+          </div>
+
+          <!-- Savings Piggy Bank Transfer Box -->
+          <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-5 sm:p-6 border-2 border-purple-200 shadow-card">
+            <h3 class="text-lg font-bold text-purple-900 mb-1 flex items-center gap-2">
+              <i class="fa-solid fa-piggy-bank text-purple-600"></i> กระปุกออมสินน้องสตางค์
+            </h3>
+            <p class="text-xs text-purple-700 mb-3">แบ่งเงินจากกระเป๋าเงินมาออมเพื่อพิชิตเป้าหมาย</p>
+            <div class="flex gap-2">
+              <input id="savings-input" type="number" min="1" placeholder="จำนวนเงิน (บาท)" class="flex-1 px-4 py-3 rounded-2xl border-2 border-purple-200 focus:border-purple-500 focus:outline-none bg-white font-bold" />
+              <button onclick="handleSavingsTransfer('deposit')" class="px-4 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-playful-purple btn-game whitespace-nowrap">
+                ออมเงิน
+              </button>
+              <button onclick="handleSavingsTransfer('withdraw')" class="px-3.5 py-3 rounded-2xl bg-white hover:bg-purple-100 text-purple-700 border-2 border-purple-200 font-bold text-sm transition whitespace-nowrap" title="ถอนเงินออมกลับเข้ากระเป๋า">
+                ถอน
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Transaction History -->
+        <div class="lg:col-span-7 bg-white rounded-3xl p-5 sm:p-6 border-2 border-slate-100 shadow-card flex flex-col">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-clock-rotate-left text-purple-500"></i> ประวัติการทำรายการ
+            </h3>
+            <div class="flex gap-1.5">
+              <button onclick="setTxFilter('all')" id="filter-all" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-orange-500 text-white">ทั้งหมด</button>
+              <button onclick="setTxFilter('income')" id="filter-income" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600">รายรับ</button>
+              <button onclick="setTxFilter('expense')" id="filter-expense" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600">รายจ่าย</button>
+            </div>
+          </div>
+
+          <div id="tx-list" class="space-y-2.5 max-h-[540px] overflow-y-auto pr-1">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- TAB 3: MONEY MISSIONS (5 STAGES)                          -->
+    <!-- ========================================================= -->
+    <section id="tab-missions" class="tab-section hidden space-y-6 animate-pop">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-flag-checkered text-orange-500"></i> ภารกิจพิชิตเงิน (5 ด่าน)
+          </h2>
+          <p class="text-sm text-slate-500">ผ่านทุกด่านเพื่อสะสมคะแนน ดาว เหรียญรางวัล และปลดล็อกระดับใหม่!</p>
+        </div>
+        <button id="btn-back-mission-map" onclick="closeMissionStage()" class="hidden self-start px-4 py-2.5 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-sm transition flex items-center gap-2">
+          <i class="fa-solid fa-arrow-left"></i> กลับไปแผนที่ภารกิจ
+        </button>
+      </div>
+
+      <!-- Mission Map View -->
+      <div id="mission-map-view" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Active Mission Stage Container -->
+      <div id="mission-stage-view" class="hidden bg-white rounded-3xl p-5 sm:p-8 border-2 border-orange-200 shadow-card">
+        <!-- Dynamic Stage Content Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- TAB 4: FINANCIAL CLASSROOM (5 LESSONS)                    -->
+    <!-- ========================================================= -->
+    <section id="tab-classroom" class="tab-section hidden space-y-6 animate-pop">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-book-open-reader text-purple-600"></i> ห้องเรียนการเงิน
+        </h2>
+        <p class="text-sm text-slate-500">เรียนรู้พื้นฐานการเงิน 5 หัวข้อสั้นๆ เข้าใจง่าย พร้อมคำถามท้ายบทรับคะแนนพิเศษ!</p>
+      </div>
+
+      <!-- Lesson Selector Pills -->
+      <div id="lesson-tabs" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Active Lesson Content -->
+      <div id="lesson-content" class="bg-white rounded-3xl p-5 sm:p-8 border-2 border-purple-100 shadow-card">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- TAB 5: LEARNING SUMMARY & REPORT                          -->
+    <!-- ========================================================= -->
+    <section id="tab-report" class="tab-section hidden space-y-6 animate-pop">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-chart-pie text-orange-500"></i> รายงานสรุปผลการเรียนรู้
+          </h2>
+          <p class="text-sm text-slate-500">วิเคราะห์พฤติกรรมการเงิน คะแนน เหรียญรางวัล และกราฟสรุปข้อมูลจริง</p>
+        </div>
+        <button onclick="exportToCSV()" class="self-start sm:self-auto px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm shadow-playful-mint btn-game flex items-center gap-2">
+          <i class="fa-solid fa-file-csv text-lg"></i> ส่งออกข้อมูลเป็นไฟล์ CSV
+        </button>
+      </div>
+
+      <!-- KPI Overview -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-3xl p-4 border-2 border-orange-100 shadow-card text-center">
+          <div class="text-xs text-slate-500 font-semibold">คะแนนรวม & ระดับ</div>
+          <div id="rep-score" class="text-3xl font-extrabold text-orange-500 mt-1">0</div>
+          <div id="rep-level" class="text-xs font-bold text-purple-600 mt-0.5">นักวางแผนมือใหม่</div>
+        </div>
+        <div class="bg-white rounded-3xl p-4 border-2 border-emerald-100 shadow-card text-center">
+          <div class="text-xs text-slate-500 font-semibold">ภารกิจที่ผ่าน</div>
+          <div id="rep-missions" class="text-3xl font-extrabold text-emerald-600 mt-1">0 / 5</div>
+          <div id="rep-stars" class="text-xs font-bold text-yellow-600 mt-0.5">0 / 15 ดาว</div>
+        </div>
+        <div class="bg-white rounded-3xl p-4 border-2 border-sky-100 shadow-card text-center">
+          <div class="text-xs text-slate-500 font-semibold">ตอบถูก / ตอบผิด</div>
+          <div class="text-3xl font-extrabold text-sky-600 mt-1">
+            <span id="rep-correct">0</span> <span class="text-slate-300 text-xl">/</span> <span id="rep-wrong" class="text-rose-500">0</span>
+          </div>
+          <div id="rep-accuracy" class="text-xs font-bold text-slate-500 mt-0.5">ความแม่นยำ 0%</div>
+        </div>
+        <div class="bg-white rounded-3xl p-4 border-2 border-purple-100 shadow-card text-center">
+          <div class="text-xs text-slate-500 font-semibold">สถานะเป้าหมายการออม</div>
+          <div id="rep-goal-status" class="text-xl font-extrabold text-purple-600 mt-2">กำลังออม</div>
+          <div id="rep-goal-detail" class="text-xs font-bold text-slate-500 mt-1">฿0 / ฿500</div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-slate-100 shadow-card">
+          <h3 class="text-base sm:text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-chart-bar text-orange-500"></i> เปรียบเทียบรายรับ รายจ่าย และเงินออม (บาท)
+          </h3>
+          <div class="relative h-64 w-full">
+            <canvas id="chart-overview"></canvas>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-slate-100 shadow-card">
+          <h3 class="text-base sm:text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-chart-pie text-purple-500"></i> สัดส่วนรายจ่ายแยกตามหมวดหมู่
+          </h3>
+          <div class="relative h-64 w-full flex items-center justify-center">
+            <canvas id="chart-expenses"></canvas>
+            <div id="chart-expenses-empty" class="hidden text-center text-slate-400 text-sm">
+              <i class="fa-solid fa-receipt text-3xl mb-2 block"></i>
+              ยังไม่มีรายการรายจ่ายในกระเป๋าเงินจำลอง
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personalized Behavioral Feedback -->
+      <div class="bg-gradient-to-br from-orange-50 via-yellow-50 to-emerald-50 rounded-3xl p-6 border-2 border-orange-200 shadow-card">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles text-orange-500"></i> บทวิเคราะห์พฤติกรรมและคำแนะนำจากน้องสตางค์
+        </h3>
+        <div id="rep-analysis" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Dynamically generated based on real user behavior -->
+        </div>
+      </div>
+
+      <!-- Badges Showcase -->
+      <div class="bg-white rounded-3xl p-6 border-2 border-purple-100 shadow-card">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-award text-yellow-500"></i> เหรียญตราความสำเร็จ (Badges)
+        </h3>
+        <div id="rep-badges" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-white border-t border-orange-100 py-5 px-4 mt-8 text-center text-xs text-slate-500">
+    <p class="font-semibold text-slate-700">Money Mission: ภารกิจพิชิตเงิน — นวัตกรรมเกมการเรียนรู้ทางการเงินสำหรับเด็กและเยาวชน</p>
+    <p class="mt-1">ข้อมูลทั้งหมดเป็นเงินจำลองเพื่อการศึกษา บันทึกอยู่ใน LocalStorage บนเบราว์เซอร์ของคุณเท่านั้น ไม่มีการเชื่อมต่อธนาคารหรือเก็บข้อมูลส่วนบุคคล</p>
+    <p class="mt-0.5 text-slate-400">คำแนะนำทางการเงินในเกมเป็นหลักการพื้นฐานเพื่อการเรียนรู้ ไม่ใช่คำแนะนำการลงทุนเฉพาะบุคคล</p>
+  </footer>
+
+  <!-- ==================== MOBILE BOTTOM NAVIGATION ==================== -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t-2 border-orange-100 px-2 py-1.5 flex justify-around items-center shadow-lg">
+    <button data-nav="dashboard" onclick="switchTab('dashboard')" class="nav-btn-mobile flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold">
+      <i class="fa-solid fa-house text-lg mb-0.5"></i> หน้าแรก
+    </button>
+    <button data-nav="wallet" onclick="switchTab('wallet')" class="nav-btn-mobile flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold">
+      <i class="fa-solid fa-wallet text-lg mb-0.5"></i> กระเป๋าเงิน
+    </button>
+    <button data-nav="missions" onclick="switchTab('missions')" class="nav-btn-mobile flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold">
+      <i class="fa-solid fa-flag-checkered text-lg mb-0.5"></i> ภารกิจ
+    </button>
+    <button data-nav="classroom" onclick="switchTab('classroom')" class="nav-btn-mobile flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold">
+      <i class="fa-solid fa-book-open text-lg mb-0.5"></i> ห้องเรียน
+    </button>
+    <button data-nav="report" onclick="switchTab('report')" class="nav-btn-mobile flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold">
+      <i class="fa-solid fa-chart-pie text-lg mb-0.5"></i> สรุปผล
+    </button>
+  </nav>
+
+  <!-- ==================== TOAST NOTIFICATION ==================== -->
+  <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2 max-w-sm w-[calc(100%-2rem)] pointer-events-none"></div>
+
+  <!-- ==================== CUSTOM MODAL (PROFILE / EDIT / CONFIRM) ==================== -->
+  <div id="modal-backdrop" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="modal-content" class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-orange-100 animate-pop">
+      <!-- Dynamic Modal Body -->
+    </div>
+  </div>
+
+  <!-- ==================== APPLICATION LOGIC ==================== -->
+  <script>
+    // =========================================================================
+    // 1. CONSTANTS & STATIC DATA
+    // =========================================================================
+    const STORAGE_KEY = 'money_mission_state_v1';
+
+    const INCOME_CATEGORIES = [
+      'เงินค่าขนม',
+      'เงินรางวัล',
+      'รายได้พิเศษ',
+      'เงินที่ได้รับจากครอบครัว',
+      'อื่น ๆ'
+    ];
+
+    const EXPENSE_CATEGORIES = [
+      'อาหาร',
+      'การเดินทาง',
+      'อุปกรณ์การเรียน',
+      'ความบันเทิง',
+      'เสื้อผ้า',
+      'ของใช้จำเป็น',
+      'อื่น ๆ'
+    ];
+
+    const LEVELS = [
+      { level: 1, minScore: 0, title: 'นักวางแผนมือใหม่' },
+      { level: 2, minScore: 100, title: 'ผู้ฝึกหัดการออม' },
+      { level: 3, minScore: 250, title: 'นักบริหารเงินรุ่นเยาว์' },
+      { level: 4, minScore: 450, title: 'ผู้พิชิตภารกิจการเงิน' },
+      { level: 5, minScore: 650, title: 'ปรมาจารย์การเงินรุ่นจิ๋ว' }
+    ];
+
+    const BADGE_DEFS = [
+      { id: 'first_budget', name: 'นักวางแผนการเงิน', desc: 'ผ่านภารกิจด่านที่ 1', icon: 'fa-calculator', color: 'bg-orange-100 text-orange-600' },
+      { id: 'smart_shopper', name: 'นักช้อปฉลาด', desc: 'ผ่านภารกิจด่านที่ 2', icon: 'fa-bag-shopping', color: 'bg-emerald-100 text-emerald-600' },
+      { id: 'gold_saver', name: 'นักออมมือทอง', desc: 'ผ่านด่านที่ 3 หรือออมครบ ฿200', icon: 'fa-piggy-bank', color: 'bg-yellow-100 text-yellow-600' },
+      { id: 'problem_solver', name: 'นักแก้ปัญหา', desc: 'ผ่านภารกิจด่านที่ 4', icon: 'fa-lightbulb', color: 'bg-sky-100 text-sky-600' },
+      { id: 'cyber_detective', name: 'นักสืบไซเบอร์', desc: 'ผ่านภารกิจด่านที่ 5', icon: 'fa-shield-halved', color: 'bg-purple-100 text-purple-600' },
+      { id: 'wallet_master', name: 'เซียนจดบัญชี', desc: 'บันทึกรายการในกระเป๋า 3+ ครั้ง', icon: 'fa-book', color: 'bg-pink-100 text-pink-600' },
+      { id: 'scholar', name: 'นักเรียนดีเด่น', desc: 'ทำควิซห้องเรียนผ่าน 3+ บท', icon: 'fa-graduation-cap', color: 'bg-indigo-100 text-indigo-600' }
+    ];
+
+    const MISSION_META = [
+      {
+        id: 1,
+        title: 'ด่านที่ 1: นักวางแผนรายรับรายจ่าย',
+        shortDesc: 'จัดสรรงบประมาณ ฿1,000 ให้เพียงพอตลอด 7 วัน',
+        icon: 'fa-calendar-check',
+        gradient: 'from-orange-400 to-amber-500',
+        maxScore: 120
+      },
+      {
+        id: 2,
+        title: 'ด่านที่ 2: นักช้อปฉลาดเลือก',
+        shortDesc: 'ตัดสินใจเลือกซื้อของจำเป็นและคุ้มค่าตามงบที่มี',
+        icon: 'fa-cart-shopping',
+        gradient: 'from-emerald-400 to-teal-500',
+        maxScore: 150
+      },
+      {
+        id: 3,
+        title: 'ด่านที่ 3: พิชิตเป้าหมายการออม',
+        shortDesc: 'ตั้งเป้าหมาย คำนวณเงินออม และเริ่มหยอดกระปุก',
+        icon: 'fa-bullseye',
+        gradient: 'from-purple-500 to-pink-500',
+        maxScore: 120
+      },
+      {
+        id: 4,
+        title: 'ด่านที่ 4: นักแก้ปัญหาการเงิน',
+        shortDesc: 'รับมือสถานการณ์ไม่คาดคิดและปกป้องเงินออม',
+        icon: 'fa-shuffle',
+        gradient: 'from-sky-400 to-blue-600',
+        maxScore: 150
+      },
+      {
+        id: 5,
+        title: 'ด่านที่ 5: นักสืบจับมิจฉาชีพ',
+        shortDesc: 'รู้เท่าทันกลโกงออนไลน์ ลิงก์ปลอม และรหัส OTP',
+        icon: 'fa-user-secret',
+        gradient: 'from-rose-500 to-purple-600',
+        maxScore: 200
+      }
+    ];
+
+    // Mission 2 Scenarios
+    const M2_SCENARIOS = [
+      {
+        budget: 300,
+        title: 'สถานการณ์ที่ 1: ซื้ออุปกรณ์การเรียนเปิดเทอม',
+        story: 'คุณมีเงินอยู่ ฿300 และพรุ่งนี้ต้องใช้สมุด ปากกา และไม้บรรทัดในการเรียนวิชาคณิตศาสตร์',
+        choices: [
+          {
+            label: 'ซื้อสมุด ปากกา และไม้บรรทัดที่จำเป็นก่อน (ราคา ฿140)',
+            cost: 140,
+            correct: true,
+            points: 50,
+            feedback: 'ยอดเยี่ยมมาก! คุณแยกแยะความจำเป็นได้ถูกต้อง ซื้อของที่ต้องใช้เรียนก่อน และยังมีเงินเหลือเก็บออมอีก ฿160'
+          },
+          {
+            label: 'ซื้อตุ๊กตาพวงกุญแจที่กำลังลดราคา 50% แต่ไม่ได้ใช้เรียน (ราคา ฿180)',
+            cost: 180,
+            correct: false,
+            points: 10,
+            feedback: 'ระวังกับดักป้ายลดราคา! ของลดราคาไม่ได้แปลว่าคุ้มค่าเสมอไป หากเราไม่ได้จำเป็นต้องใช้ จะทำให้เงินไม่พอซื้ออุปกรณ์การเรียน'
+          },
+          {
+            label: 'ใช้เงินทั้งหมด ฿300 ซื้อของเล่นรุ่นใหม่ที่อยากได้มานาน',
+            cost: 300,
+            correct: false,
+            points: 0,
+            feedback: 'ไม่แนะนำเลย! การใช้เงินทั้งหมดไปกับความต้องการทำให้พรุ่งนี้ไม่มีอุปกรณ์เรียน และไม่เหลือเงินสำรองเลย'
+          }
+        ]
+      },
+      {
+        budget: 150,
+        title: 'สถานการณ์ที่ 2: พักกลางวันที่โรงเรียน',
+        story: 'วันนี้คุณมีเงินค่าขนม ฿150 ต้องใช้ซื้อข้าวกลางวัน น้ำดื่ม และเก็บค่ารถกลับบ้าน ฿30',
+        choices: [
+          {
+            label: 'ซื้อชานมไข่มุกแก้วใหญ่ ฿85 และขนมกรุบกรอบ ฿50',
+            cost: 135,
+            correct: false,
+            points: 0,
+            feedback: 'อันตราย! คุณจะเหลือเงินแค่ ฿15 ไม่พอค่ารถกลับบ้าน แถมยังไม่ได้กินข้าวกลางวันที่มีประโยชน์ด้วย'
+          },
+          {
+            label: 'กินข้าวกลางวัน ฿45 น้ำเปล่า ฿10 กันค่ารถ ฿30 ที่เหลือ ฿65 เก็บออม',
+            cost: 85,
+            correct: true,
+            points: 50,
+            feedback: 'ฉลาดเลือกมาก! อิ่มท้อง มีค่ารถกลับบ้านครบ และยังมีเงินออมเหลือเก็บอีกตั้ง ฿65'
+          },
+          {
+            label: 'ไม่กินข้าวกลางวันเพื่อเก็บเงินไปเติมเกมทั้งหมด',
+            cost: 30,
+            correct: false,
+            points: 10,
+            feedback: 'การออมเงินเป็นเรื่องดี แต่ไม่ควรอดอาหารมื้อหลักเพราะจะเสียสุขภาพและไม่มีสมาธิเรียน'
+          }
+        ]
+      },
+      {
+        budget: 500,
+        title: 'สถานการณ์ที่ 3: รองเท้านักเรียนคู่ใหม่',
+        story: 'คุณมีงบ ฿500 เพื่อซื้อรองเท้านักเรียนคู่ใหม่ที่ทนทานและใส่สบาย',
+        choices: [
+          {
+            label: 'เปรียบเทียบคุณภาพและราคา เลือกคู่ที่ทนทาน ใส่สบาย ราคา ฿350',
+            cost: 350,
+            correct: true,
+            points: 50,
+            feedback: 'สุดยอดนักช้อป! การเปรียบเทียบคุณภาพและราคาช่วยให้ได้ของดี ใช้งานได้นาน และประหยัดเงินไปได้ ฿150'
+          },
+          {
+            label: 'ซื้อคู่ที่ราคาถูกที่สุด ฿120 แต่พื้นบางมากและขาดง่ายใน 1 เดือน',
+            cost: 120,
+            correct: false,
+            points: 15,
+            feedback: 'ของถูกเกินไปที่ไม่มีคุณภาพ อาจทำให้ต้องซื้อใหม่บ่อยๆ จนเสียเงินรวมแพงกว่าเดิมนะ'
+          },
+          {
+            label: 'ยืมเงินเพื่อนเพิ่มอีก ฿400 เพื่อซื้อรองเท้าแฟชั่นราคา ฿900 ที่ใส่ไปโรงเรียนไม่ได้',
+            cost: 500,
+            correct: false,
+            points: 0,
+            feedback: 'ไม่ควรสร้างหนี้เพื่อซื้อของเกินงบและผิดวัตถุประสงค์ในการใช้งาน!'
+          }
+        ]
+      }
+    ];
+
+    // Mission 4 Random Financial Problem Events
+    const M4_EVENTS = [
+      {
+        id: 'e1',
+        icon: 'fa-shoe-prints',
+        badge: 'ค่าใช้จ่ายฉุกเฉิน',
+        title: 'รองเท้านักเรียนขาดกะทันหัน!',
+        story: 'ระหว่างเดินกลับบ้าน พื้นรองเท้าของคุณขาดจนใส่ไม่ได้ ต้องซ่อมด่วนราคา ฿80 หรือซื้อใหม่ ฿350',
+        choices: [
+          {
+            label: 'นำไปให้ช่างซ่อมเย็บพื้นให้แข็งแรง (จ่าย ฿80)',
+            balanceDelta: -80,
+            savingsDelta: 0,
+            correct: true,
+            points: 50,
+            feedback: 'แก้ปัญหาได้ยอดเยี่ยม! การซ่อมแซมช่วยประหยัดเงินได้มากและไม่กระทบเป้าหมายการออม'
+          },
+          {
+            label: 'ถอนเงินออมทั้งหมดมาซื้อรองเท้าใหม่ทันที (จ่าย ฿350)',
+            balanceDelta: -200,
+            savingsDelta: -150,
+            correct: false,
+            points: 15,
+            feedback: 'หากซ่อมได้ควรซ่อมก่อน เพื่อรักษาเงินออมไว้สำหรับเป้าหมายสำคัญ'
+          },
+          {
+            label: 'ยืมเงินเพื่อนโดยไม่วางแผนว่าจะคืนอย่างไร',
+            balanceDelta: 0,
+            savingsDelta: 0,
+            correct: false,
+            points: 0,
+            feedback: 'การยืมเงินโดยไม่มีแผนคืนจะสร้างปัญหาความเชื่อใจและหนี้สินตามมา'
+          }
+        ]
+      },
+      {
+        id: 'e2',
+        icon: 'fa-coins',
+        badge: 'รายรับลดลง',
+        title: 'สัปดาห์นี้เงินค่าขนมลดลง ฿100',
+        story: 'ครอบครัวมีค่าใช้จ่ายจำเป็น ทำให้สัปดาห์นี้คุณได้ค่าขนมน้อยกว่าปกติ ฿100 คุณจะจัดการอย่างไร?',
+        choices: [
+          {
+            label: 'ปรับลดค่าขนมและของเล่นที่ไม่จำเป็นลง เพื่อให้เงินพอใช้ตลอดสัปดาห์',
+            balanceDelta: -50,
+            savingsDelta: 20,
+            correct: true,
+            points: 50,
+            feedback: 'เก่งมาก! เมื่อรายรับลดลง การปรับลดรายจ่ายฟุ่มเฟือยคือกุญแจสำคัญของการเอาตัวรอดทางการเงิน'
+          },
+          {
+            label: 'ใช้เงินเหมือนเดิมทุกวัน จนเงินหมดตั้งแต่วันพุธ',
+            balanceDelta: -150,
+            savingsDelta: 0,
+            correct: false,
+            points: 0,
+            feedback: 'หากไม่ปรับแผนการใช้เงินเมื่อรายรับลดลง เราจะขาดเงินใช้ในช่วงปลายสัปดาห์'
+          }
+        ]
+      },
+      {
+        id: 'e3',
+        icon: 'fa-users',
+        badge: 'แรงกดดันจากเพื่อน',
+        title: 'เพื่อนชวนซื้อกล่องสุ่มราคาแพง',
+        story: 'กลุ่มเพื่อนชวนกันซื้อกล่องสุ่มยอดฮิต กล่องละ ฿250 ซึ่งเกินงบความบันเทิงของคุณ',
+        choices: [
+          {
+            label: 'ปฏิเสธอย่างสุภาพ และบอกว่ากำลังเก็บเงินตามเป้าหมายของตัวเอง',
+            balanceDelta: 0,
+            savingsDelta: 50,
+            correct: true,
+            points: 50,
+            feedback: 'มั่นคงมาก! เพื่อนที่ดีจะเข้าใจเป้าหมายของเรา และคุณยังรักษาเงินไว้ได้ครบถ้วน'
+          },
+          {
+            label: 'กลัวไม่เข้าพวก เลยยอมควักเงินค่าข้าวมาซื้อตามเพื่อน',
+            balanceDelta: -250,
+            savingsDelta: 0,
+            correct: false,
+            points: 0,
+            feedback: 'อย่าใช้จ่ายตามกระแสจนกระทบเงินจำเป็นของตัวเองนะ!'
+          }
+        ]
+      },
+      {
+        id: 'e4',
+        icon: 'fa-bus',
+        badge: 'ค่าเดินทางเพิ่ม',
+        title: 'ฝนตกหนักต้องขึ้นรถสองแถวเพิ่ม ฿40',
+        story: 'เย็นนี้ฝนตกหนักมาก เดินกลับบ้านไม่ได้ ต้องเสียค่ารถเพิ่ม ฿40',
+        choices: [
+          {
+            label: 'ใช้เงินสำรองจ่ายค่ารถ ฿40 เพื่อความปลอดภัย แล้วลดค่าขนมวันพรุ่งนี้แทน',
+            balanceDelta: -40,
+            savingsDelta: 0,
+            correct: true,
+            points: 50,
+            feedback: 'ตัดสินใจได้ดีมาก! ความปลอดภัยและสุขภาพสำคัญที่สุด และคุณรู้จักชดเชยงบในวันถัดไป'
+          },
+          {
+            label: 'เหมารถแท็กซี่ราคา ฿200 ทั้งที่มีรถสองแถวผ่านหน้าบ้าน',
+            balanceDelta: -200,
+            savingsDelta: 0,
+            correct: false,
+            points: 10,
+            feedback: 'ควรเลือกทางเลือกที่ปลอดภัยและคุ้มค่ากับงบประมาณมากที่สุด'
+          }
+        ]
+      },
+      {
+        id: 'e5',
+        icon: 'fa-hand-holding-dollar',
+        badge: 'รายได้พิเศษ',
+        title: 'ได้รับเงินรางวัลช่วยงานบ้าน ฿150!',
+        story: 'คุณช่วยจัดบ้านและรดน้ำต้นไม้จนสะอาด คุณพ่อคุณแม่จึงให้เงินรางวัลพิเศษ ฿150',
+        choices: [
+          {
+            label: 'แบ่งออมเข้ากระปุก ฿100 และเก็บไว้ใช้จ่ายส่วนตัว ฿50',
+            balanceDelta: 50,
+            savingsDelta: 100,
+            correct: true,
+            points: 50,
+            feedback: 'ยอดเยี่ยม! การแบ่งเงินรางวัลส่วนใหญ่มาออมช่วยให้ถึงเป้าหมายได้เร็วขึ้นมาก'
+          },
+          {
+            label: 'รีบเอาไปซื้อขนมกินหมดในวันเดียว',
+            balanceDelta: 0,
+            savingsDelta: 0,
+            correct: false,
+            points: 10,
+            feedback: 'น่าเสียดาย! หากแบ่งออมไว้บางส่วน เงินรางวัลนี้จะช่วยสร้างความมั่นคงให้คุณได้มากเลย'
+          }
+        ]
+      }
+    ];
+
+    // Mission 5 Cyber Scam Scenarios
+    const M5_SCAMS = [
+      {
+        channel: 'SMS ข้อความมือถือ',
+        sender: 'LuckyPrize-999',
+        message: 'ยินดีด้วย! คุณเป็นผู้โชคดีได้รับสมาร์ตโฟนรุ่นใหม่ฟรี! เพียงโอนค่าธรรมเนียมจัดส่ง ฿300 ภายใน 10 นาทีนี้',
+        choices: [
+          { text: 'รีบโอนเงิน ฿300 ทันที เพราะกลัวหมดเขต', correct: false },
+          { text: 'ไม่เชื่อ ไม่โอนเงิน และลบทิ้งทันที เพราะไม่เคยร่วมลุ้นรางวัล', correct: true },
+          { text: 'ส่งต่อข้อความนี้ให้เพื่อนช่วยดูและลองโอนแทน', correct: false }
+        ],
+        explanation: 'มิจฉาชีพมักใช้คำว่า "โชคดีได้รับรางวัล" และเร่งเวลาให้เราตกใจจนรีบโอนเงิน รางวัลของแท้จะไม่มีการเรียกเก็บเงินค่าธรรมเนียมก่อนล่วงหน้า!',
+        tip: 'วิธีป้องกัน: จำไว้เสมอว่า "ของฟรีที่ต้องโอนเงินก่อน = มิจฉาชีพ 100%"'
+      },
+      {
+        channel: 'แชทออนไลน์',
+        sender: 'บัญชีปลอมที่แอบอ้างเป็นเพื่อน',
+        message: 'แกๆ ช่วยส่งรหัส OTP 6 หลักที่เพิ่งส่งเข้ามือถือแกให้หน่อยสิ เราใส่เบอร์ผิดไปใส่เบอร์แกอะ ด่วนมาก!',
+        choices: [
+          { text: 'ห้ามบอกรหัส OTP เด็ดขาด และโทรเช็กกับเพื่อนตัวจริงทางโทรศัพท์', correct: true },
+          { text: 'รีบส่งรหัส OTP ให้เพื่อน เพราะเป็นคนรู้จักกัน', correct: false },
+          { text: 'ถ่ายรูปหน้าจอ SMS รหัส OTP ส่งไปในแชทแทนการพิมพ์', correct: false }
+        ],
+        explanation: 'รหัส OTP (One-Time Password) เปรียบเสมือนกุญแจเปิดบัญชีธนาคารหรือบัญชีออนไลน์ ห้ามบอกใครเด็ดขาดแม้แต่อ้างว่าเป็นเพื่อนหรือเจ้าหน้าที่!',
+        tip: 'วิธีป้องกัน: ตั้งกฎเหล็ก "ไม่บอก ไม่ส่ง ไม่แคปหน้าจอ OTP ให้ใครทั้งสิ้น"'
+      },
+      {
+        channel: 'โพสต์โซเชียลมีเดีย',
+        sender: 'เพจ "รวยไวใน 1 วัน"',
+        message: 'ลงทุนออมเงินแค่ ฿500 การันตีกำไร ฿5,000 ภายใน 24 ชั่วโมง! ไม่มีความเสี่ยง ได้เงินจริง 100% ทักแชทเลย!',
+        choices: [
+          { text: 'ลองโอนเงินออมไปลงทุน ฿500 เผื่อจะได้กำไรเร็วๆ', correct: false },
+          { text: 'รู้ทันว่าเป็นแชร์ลูกโซ่/หลอกลงทุน กดรายงาน (Report) และไม่โอนเงิน', correct: true },
+          { text: 'ชวนเพื่อนๆ มาร่วมลงขันคนละ ฿100', correct: false }
+        ],
+        explanation: 'ไม่มีการลงทุนที่ถูกกฎหมายใดๆ ในโลกที่รับประกันผลตอบแทนสูงผิดปกติในเวลาสั้นๆ โดยไม่มีความเสี่ยง นี่คือกับดักหลอกให้โอนเงินแล้วเชิดหนี!',
+        tip: 'วิธีป้องกัน: หากข้อเสนอ "ดีเกินจริง" ให้สงสัยไว้ก่อนว่าเป็นมิจฉาชีพ และปรึกษาผู้ปกครองเสมอ'
+      },
+      {
+        channel: 'อีเมล / แชท',
+        sender: 'Admin-School-Verify.xyz',
+        message: 'แจ้งเตือนด่วน! กดลิงก์นี้ bit.ly/fake-verify เพื่อกรอกเลขบัตรประชาชน รหัสผ่าน และเบอร์ผู้ปกครอง เพื่อรับทุนการศึกษา',
+        choices: [
+          { text: 'กดลิงก์แล้วกรอกข้อมูลทั้งหมดทันที', correct: false },
+          { text: 'ไม่กดลิงก์แปลกปลอม ไม่กรอกข้อมูลส่วนตัว และสอบถามคุณครูหรือผู้ปกครองก่อน', correct: true },
+          { text: 'กรอกแค่ชื่อและเลขบัตรประชาชน แต่ไม่กรอกรหัสผ่าน', correct: false }
+        ],
+        explanation: 'นี่คือการโจมตีแบบ Phishing (ฟิชชิ่ง) เพื่อขโมยข้อมูลส่วนบุคคลและรหัสผ่านไปสวมรอยทำธุรกรรมผิดกฎหมาย',
+        tip: 'วิธีป้องกัน: ตรวจสอบชื่อเว็บไซต์เสมอ ไม่คลิกลิงก์น่าสงสัย และห้ามกรอกเลขบัตรประชาชนบนเว็บที่ไม่น่าเชื่อถือ'
+      },
+      {
+        channel: 'สายโทรศัพท์แปลก',
+        sender: '09X-XXX-XXXX (แอบอ้างเป็นธนาคาร)',
+        message: 'สวัสดีครับ โทรจากฝ่ายตรวจสอบธนาคาร บัญชีผู้ปกครองของคุณถูกระงับ กรุณาแอดไลน์และโอนเงินมาตรวจสอบด่วน ไม่อย่างนั้นจะถูกดำเนินคดี!',
+        choices: [
+          { text: 'ตั้งสติ วางสายทันที และนำเรื่องไปบอกผู้ปกครอง (ไม่แอดไลน์ ไม่โอนเงิน)', correct: true },
+          { text: 'ตกใจกลัว รีบแอดไลน์และทำตามที่เขาบอกทุกอย่าง', correct: false },
+          { text: 'บอกเลขบัญชีและข้อมูลของผู้ปกครองให้เขาตรวจสอบ', correct: false }
+        ],
+        explanation: 'แก๊งคอลเซ็นเตอร์มักข่มขู่ให้เกิดความกลัวเพื่อให้เหยื่อขาดสติ ธนาคารและตำรวจจริงไม่มีนโยบายให้แอดไลน์หรือโอนเงินมาตรวจสอบเด็ดขาด!',
+        tip: 'วิธีป้องกัน: "ไม่เชื่อ ไม่รีบ ไม่โอน" วางสายทันทีและปรึกษาผู้ใหญ่หรือโทรเบอร์ Call Center ทางการของธนาคาร'
+      }
+    ];
+
+    // Financial Classroom 5 Lessons
+    const LESSONS = [
+      {
+        id: 1,
+        title: '1. เงินคืออะไรและสำคัญอย่างไร',
+        missionLink: 1,
+        missionLabel: 'ไปลุยด่านที่ 1: นักวางแผนรายรับรายจ่าย',
+        color: 'from-orange-400 to-amber-500',
+        icon: 'fa-coins',
+        summary: 'เงินคือสื่อกลางที่ใช้แลกเปลี่ยนสินค้าและบริการที่เราต้องการในชีวิตประจำวัน เช่น อาหาร เสื้อผ้า หนังสือ หรือค่าเดินทาง การรู้จักคุณค่าของเงินและวางแผนใช้จ่ายอย่างมีสติ จะช่วยให้เรามีความมั่นคงและบรรลุเป้าหมายในอนาคตได้',
+        example: 'ตัวอย่างในชีวิตประจำวัน: คุณได้รับเงินค่าขนมสัปดาห์ละ ฿300 หากรู้จักแบ่งเงินส่วนหนึ่งไว้ซื้ออาหารกลางวัน และแบ่งส่วนหนึ่งเก็บออม คุณจะมีเงินพอใช้ตลอดสัปดาห์โดยไม่ต้องขอยืมใคร',
+        quiz: {
+          question: 'ข้อใดคือหน้าที่สำคัญที่สุดของ "เงิน" ในชีวิตประจำวัน?',
+          options: [
+            'ใช้เป็นสื่อกลางในการแลกเปลี่ยนสินค้าและบริการ',
+            'ใช้สะสมไว้ดูเล่นโดยไม่ต้องวางแผนอะไร',
+            'ใช้ซื้อของฟุ่มเฟือยเพื่อให้ดูดีในสายตาคนอื่น'
+          ],
+          correctIndex: 0,
+          explain: 'ถูกต้อง! เงินเป็นสื่อกลางในการแลกเปลี่ยนสินค้าและบริการ และเป็นเครื่องมือช่วยให้เราบรรลุเป้าหมายในชีวิต'
+        }
+      },
+      {
+        id: 2,
+        title: '2. รายรับและรายจ่าย',
+        missionLink: 1,
+        missionLabel: 'ไปลองจดบัญชีในกระเป๋าเงินจำลอง',
+        isWalletLink: true,
+        color: 'from-sky-400 to-blue-500',
+        icon: 'fa-scale-balanced',
+        summary: 'รายรับ คือ เงินที่เราได้รับเข้ามา เช่น ค่าขนม เงินรางวัล หรือรายได้จากการช่วยงานพิเศษ ส่วน รายจ่าย คือ เงินที่เราจ่ายออกไปเพื่อซื้อสินค้าและบริการ กฎทองของการเงินคือ "รายจ่ายต้องไม่มากกว่ารายรับ"',
+        example: 'ตัวอย่างในชีวิตประจำวัน: วันนี้ได้ค่าขนม ฿100 (รายรับ) ซื้อข้าวกลางวัน ฿40 และน้ำดื่ม ฿10 (รายจ่ายรวม ฿50) ทำให้มีเงินคงเหลือ ฿50 สำหรับเก็บออม',
+        quiz: {
+          question: 'หากใน 1 สัปดาห์เรามีรายรับ ฿500 ข้อใดคือการบริหารเงินที่ดีที่สุด?',
+          options: [
+            'ใช้จ่าย ฿600 โดยยืมเพื่อนอีก ฿100',
+            'ใช้จ่าย ฿500 พอดี ไม่เหลือเงินออมเลย',
+            'แบ่งออมก่อน ฿100 และวางแผนใช้จ่ายไม่เกิน ฿400'
+          ],
+          correctIndex: 2,
+          explain: 'เก่งมาก! สูตรลับคนเก่งการเงินคือ "รายรับ - เงินออม = รายจ่าย" แบ่งออมก่อนใช้เสมอ'
+        }
+      },
+      {
+        id: 3,
+        title: '3. ความจำเป็นและความต้องการ',
+        missionLink: 2,
+        missionLabel: 'ไปลุยด่านที่ 2: นักช้อปฉลาดเลือก',
+        color: 'from-emerald-400 to-teal-500',
+        icon: 'fa-basket-shopping',
+        summary: 'ความจำเป็น (Needs) คือสิ่งที่ขาดไม่ได้ในการดำรงชีวิตและการเรียน เช่น อาหาร น้ำดื่ม เสื้อผ้า ยารักษาโรค อุปกรณ์การเรียน ส่วน ความต้องการ (Wants) คือสิ่งที่อยากได้เพื่อความสุขสบายหรือความบันเทิง เช่น ของเล่นรุ่นใหม่ ขนมราคาแพง ควรซื้อของจำเป็นก่อนเสมอ!',
+        example: 'ตัวอย่างในชีวิตประจำวัน: สมุดจดวิชาเรียน (ความจำเป็น) vs สติกเกอร์ลายการ์ตูนรุ่นพิเศษ (ความต้องการ) หากมีงบจำกัดต้องเลือกซื้อสมุดก่อน',
+        quiz: {
+          question: 'ข้อใดจัดอยู่ในกลุ่ม "ความจำเป็น (Needs)" สำหรับนักเรียนมากที่สุด?',
+          options: [
+            'สกินตัวละครในเกมออนไลน์',
+            'อาหารกลางวันและอุปกรณ์การเรียน',
+            'ตุ๊กตากล่องสุ่มรุ่นลิมิเต็ด'
+          ],
+          correctIndex: 1,
+          explain: 'ถูกต้องที่สุด! อาหารกลางวันและอุปกรณ์การเรียนเป็นสิ่งจำเป็นต่อสุขภาพและการเรียนรู้'
+        }
+      },
+      {
+        id: 4,
+        title: '4. การออมเงินและการตั้งเป้าหมาย',
+        missionLink: 3,
+        missionLabel: 'ไปลุยด่านที่ 3: พิชิตเป้าหมายการออม',
+        color: 'from-purple-500 to-pink-500',
+        icon: 'fa-piggy-bank',
+        summary: 'การออมเงินคือการเก็บส่วนหนึ่งของรายรับไว้ใช้ในอนาคต การออมจะสำเร็จได้ง่ายขึ้นเมื่อเราตั้งเป้าหมายแบบชัดเจน คือระบุ "สิ่งที่อยากได้", "จำนวนเงินเป้าหมาย" และ "ระยะเวลา" แล้วคำนวณว่าต้องออมวันละเท่าไร',
+        example: 'ตัวอย่างในชีวิตประจำวัน: อยากซื้อหนังสือการ์ตูนความรู้ราคา ฿200 ภายใน 20 วัน ดังนั้นต้องออมเงินอย่างน้อยวันละ ฿10 อย่างสม่ำเสมอ',
+        quiz: {
+          question: 'ถ้าต้องการออมเงินซื้อกระเป๋าเป้ราคา ฿600 ภายใน 30 วัน ต้องออมเงินเฉลี่ยวันละกี่บาท?',
+          options: [
+            'วันละ ฿10',
+            'วันละ ฿20',
+            'วันละ ฿60'
+          ],
+          correctIndex: 1,
+          explain: 'คิดเลขแม่นมาก! ฿600 หารด้วย 30 วัน เท่ากับต้องออมวันละ ฿20 นั่นเอง'
+        }
+      },
+      {
+        id: 5,
+        title: '5. การรู้เท่าทันภัยทางการเงิน',
+        missionLink: 5,
+        missionLabel: 'ไปลุยด่านที่ 5: นักสืบจับมิจฉาชีพ',
+        color: 'from-rose-500 to-purple-600',
+        icon: 'fa-shield-halved',
+        summary: 'ปัจจุบันมีมิจฉาชีพออนไลน์หลอกลวงหลายรูปแบบ เช่น ส่ง SMS แจ้งถูกรางวัล หลอกขอรหัส OTP ส่งลิงก์ปลอมให้กรอกข้อมูลส่วนตัว หรือชวนลงทุนที่ได้กำไรสูงเกินจริง เราต้องยึดหลัก "ไม่เชื่อ ไม่รีบ ไม่โอน" และปรึกษาผู้ปกครองทุกครั้งที่สงสัย',
+        example: 'ตัวอย่างในชีวิตประจำวัน: มีข้อความเด้งบอกว่าคุณได้รางวัลใหญ่แต่ต้องโอนค่าส่ง ฿200 ให้สงสัยทันทีว่าเป็นมิจฉาชีพ ห้ามกดลิงก์และห้ามโอนเงินเด็ดขาด',
+        quiz: {
+          question: 'หากมีคนทักแชทมาขอรหัส OTP 6 หลักที่ส่งเข้ามือถือเรา ควรทำอย่างไร?',
+          options: [
+            'ส่งให้ทันทีถ้าเขาบอกว่าเป็นเจ้าหน้าที่',
+            'ห้ามบอกใครเด็ดขาด เพราะ OTP คือกุญแจป้องกันบัญชีของเรา',
+            'ส่งให้แค่ 3 ตัวแรกก่อน'
+          ],
+          correctIndex: 1,
+          explain: 'ยอดเยี่ยม! ห้ามบอกรหัส OTP ให้ใครรู้เด็ดขาดไม่ว่าจะเป็นใครก็ตาม'
+        }
+      }
+    ];
+
+    // =========================================================================
+    // 2. APPLICATION STATE & LOCALSTORAGE
+    // =========================================================================
+    function getDefaultState() {
+      const today = new Date().toISOString().split('T')[0];
+      return {
+        playerName: 'ผู้กล้าการเงิน',
+        transactions: [
+          {
+            id: 'tx-init-1',
+            type: 'income',
+            category: 'เงินค่าขนม',
+            amount: 1000,
+            note: 'เงินเริ่มต้นภารกิจ Money Mission',
+            date: today
+          }
+        ],
+        savings: 0,
+        savingsGoal: {
+          name: 'ซื้อกระเป๋านักเรียนใบใหม่',
+          target: 500,
+          days: 14
+        },
+        score: 0,
+        coins: 0,
+        correctAnswers: 0,
+        wrongAnswers: 0,
+        missions: {
+          1: { completed: false, stars: 0, bestScore: 0 },
+          2: { completed: false, stars: 0, bestScore: 0 },
+          3: { completed: false, stars: 0, bestScore: 0 },
+          4: { completed: false, stars: 0, bestScore: 0 },
+          5: { completed: false, stars: 0, bestScore: 0 }
+        },
+        lessonsPassed: {},
+        badges: []
+      };
+    }
+
+    let state = loadState();
+    let currentTab = 'dashboard';
+    let currentTxType = 'income';
+    let currentTxFilter = 'all';
+    let currentLessonId = 1;
+    let activeMissionSession = null;
+    let chartOverviewInstance = null;
+    let chartExpensesInstance = null;
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return getDefaultState();
+        const parsed = JSON.parse(raw);
+        // Merge with defaults for safety
+        const def = getDefaultState();
+        return {
+          ...def,
+          ...parsed,
+          savingsGoal: { ...def.savingsGoal, ...(parsed.savingsGoal || {}) },
+          missions: { ...def.missions, ...(parsed.missions || {}) },
+          lessonsPassed: parsed.lessonsPassed || {},
+          badges: Array.isArray(parsed.badges) ? parsed.badges : []
+        };
+      } catch (err) {
+        console.error('Error loading state:', err);
+        return getDefaultState();
+      }
+    }
+
+    function saveState() {
+      try {
+        evaluateBadges();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (err) {
+        console.error('Error saving state:', err);
+        showToast('ไม่สามารถบันทึกข้อมูลลงเบราว์เซอร์ได้', 'error');
+      }
+    }
+
+    // =========================================================================
+    // 3. FINANCIAL & GAMIFICATION CALCULATIONS
+    // =========================================================================
+    function formatBaht(num) {
+      const n = Number(num) || 0;
+      return '฿' + Math.round(n).toLocaleString('th-TH');
+    }
+
+    function getFinanceSummary() {
+      let totalIncome = 0;
+      let totalExpense = 0;
+      state.transactions.forEach(tx => {
+        if (tx.type === 'income') totalIncome += Number(tx.amount) || 0;
+        else totalExpense += Number(tx.amount) || 0;
+      });
+      const savings = Number(state.savings) || 0;
+      const balance = totalIncome - totalExpense - savings;
+      return { totalIncome, totalExpense, savings, balance };
+    }
+
+    function getPlayerLevel() {
+      let current = LEVELS[0];
+      for (const lv of LEVELS) {
+        if (state.score >= lv.minScore) current = lv;
+      }
+      return current;
+    }
+
+    function getTotalStars() {
+      return Object.values(state.missions).reduce((sum, m) => sum + (m.stars || 0), 0);
+    }
+
+    function getCompletedMissionsCount() {
+      return Object.values(state.missions).filter(m => m.completed).length;
+    }
+
+    function evaluateBadges() {
+      const earned = new Set(state.badges);
+      if (state.missions[1]?.completed) earned.add('first_budget');
+      if (state.missions[2]?.completed) earned.add('smart_shopper');
+      if (state.missions[3]?.completed || state.savings >= 200) earned.add('gold_saver');
+      if (state.missions[4]?.completed) earned.add('problem_solver');
+      if (state.missions[5]?.completed) earned.add('cyber_detective');
+      if (state.transactions.length >= 4) earned.add('wallet_master'); // 1 init + 3 user entries
+      if (Object.keys(state.lessonsPassed).length >= 3) earned.add('scholar');
+      state.badges = Array.from(earned);
+    }
+
+    function awardMissionRewards(missionId, earnedScore, earnedStars, earnedCoins) {
+      const m = state.missions[missionId];
+      const prevBest = m.bestScore || 0;
+      const scoreDiff = Math.max(0, earnedScore - prevBest);
+
+      m.completed = true;
+      m.stars = Math.max(m.stars || 0, earnedStars);
+      m.bestScore = Math.max(prevBest, earnedScore);
+
+      if (scoreDiff > 0) {
+        state.score += scoreDiff;
+      }
+      if (earnedCoins > 0 && prevBest === 0) {
+        state.coins += earnedCoins;
+      } else if (scoreDiff > 0) {
+        state.coins += Math.round(earnedCoins / 2);
+      }
+
+      saveState();
+      launchConfetti();
+      return scoreDiff;
+    }
+
+    // =========================================================================
+    // 4. UI UTILITIES (TOASTS, MODALS, CONFETTI, NAVIGATION)
+    // =========================================================================
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const colors = {
+        success: 'bg-emerald-500 text-white border-emerald-600',
+        error: 'bg-rose-500 text-white border-rose-600',
+        info: 'bg-purple-600 text-white border-purple-700',
+        warning: 'bg-amber-500 text-white border-amber-600'
+      };
+      const icons = {
+        success: 'fa-circle-check',
+        error: 'fa-triangle-exclamation',
+        info: 'fa-circle-info',
+        warning: 'fa-bell'
+      };
+
+      const el = document.createElement('div');
+      el.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl border-b-4 shadow-lg text-sm font-semibold animate-pop ${colors[type] || colors.info}`;
+      el.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} text-base"></i><span>${message}</span>`;
+      container.appendChild(el);
+
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-6px)';
+        el.style.transition = 'all 0.25s ease';
+        setTimeout(() => el.remove(), 250);
+      }, 3400);
+    }
+
+    function openModal(htmlContent) {
+      document.getElementById('modal-content').innerHTML = htmlContent;
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-backdrop').classList.add('hidden');
+    }
+
+    function launchConfetti() {
+      const colors = ['#FF7A00', '#10B981', '#FACC15', '#A855F7', '#EC4899'];
+      for (let i = 0; i < 36; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.backgroundColor = colors[i % colors.length];
+        piece.style.animationDelay = (Math.random() * 0.5) + 's';
+        piece.style.width = (7 + Math.random() * 7) + 'px';
+        piece.style.height = (7 + Math.random() * 7) + 'px';
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 2600);
+      }
+    }
+
+    function switchTab(tabName) {
+      currentTab = tabName;
+      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
+      const activeSec = document.getElementById('tab-' + tabName);
+      if (activeSec) activeSec.classList.remove('hidden');
+
+      // Desktop nav styles
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.dataset.nav === tabName) {
+          btn.className = 'nav-btn px-3.5 py-2 rounded-xl text-sm font-bold transition flex items-center gap-1.5 bg-orange-500 text-white shadow-sm';
+        } else {
+          btn.className = 'nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center gap-1.5 text-slate-600 hover:bg-orange-100/70';
+        }
+      });
+
+      // Mobile nav styles
+      document.querySelectorAll('.nav-btn-mobile').forEach(btn => {
+        if (btn.dataset.nav === tabName) {
+          btn.className = 'nav-btn-mobile flex flex-col items-center p-1.5 rounded-xl text-[11px] font-bold text-orange-600 bg-orange-50';
+        } else {
+          btn.className = 'nav-btn-mobile flex flex-col items-center p-1.5 rounded-xl text-[11px] font-semibold text-slate-500';
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      renderAll();
+    }
+
+    // =========================================================================
+    // 5. PROFILE & RESET MODALS
+    // =========================================================================
+    function openProfileModal() {
+      openModal(`
+        <div class="text-center mb-4">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-2xl mb-2">
+            <i class="fa-solid fa-user-astronaut"></i>
+          </div>
+          <h3 class="text-xl font-bold text-slate-800">ตั้งชื่อผู้เล่นของคุณ</h3>
+          <p class="text-xs text-slate-500 mt-1">ชื่อเล่นนี้จะแสดงบนหน้า Dashboard และรายงานสรุปผล</p>
+        </div>
+        <form onsubmit="savePlayerName(event)" class="space-y-4">
+          <input id="input-player-name" type="text" maxlength="25" required value="${escapeHtml(state.playerName)}"
+            class="w-full px-4 py-3 rounded-2xl border-2 border-purple-200 focus:border-purple-500 focus:outline-none text-center font-bold text-lg" placeholder="ใส่ชื่อเล่นของคุณ" />
+          <div class="grid grid-cols-2 gap-3">
+            <button type="button" onclick="closeModal()" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-600">ยกเลิก</button>
+            <button type="submit" class="py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-playful-purple btn-game">บันทึกชื่อ</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function savePlayerName(e) {
+      e.preventDefault();
+      const val = document.getElementById('input-player-name').value.trim();
+      if (!val) return;
+      state.playerName = val;
+      saveState();
+      closeModal();
+      renderAll();
+      showToast(`ยินดีต้อนรับคุณ ${val}!`, 'success');
+    }
+
+    function confirmResetGame() {
+      openModal(`
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-3xl mb-3">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <h3 class="text-xl font-bold text-slate-800">ล้างข้อมูลและเริ่มเกมใหม่?</h3>
+          <p class="text-sm text-slate-600 mt-2 font-body">
+            ยอดเงิน ประวัติรายรับ-รายจ่าย คะแนน เหรียญรางวัล และความคืบหน้าภารกิจทั้งหมดจะถูกรีเซ็ตกลับไปเริ่มต้นที่ ฿1,000
+          </p>
+          <div class="grid grid-cols-2 gap-3 mt-6">
+            <button onclick="closeModal()" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700">ยกเลิก</button>
+            <button onclick="executeResetGame()" class="py-3 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold shadow-md">ยืนยันเริ่มใหม่</button>
+          </div>
+        </div>
+      `);
+    }
+
+    function executeResetGame() {
+      localStorage.removeItem(STORAGE_KEY);
+      state = getDefaultState();
+      saveState();
+      closeModal();
+      closeMissionStage();
+      renderAll();
+      showToast('รีเซ็ตข้อมูลเรียบร้อย เริ่มต้นภารกิจใหม่ได้เลย!', 'info');
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // =========================================================================
+    // 6. RENDER DASHBOARD
+    // =========================================================================
+    function renderDashboard() {
+      const fin = getFinanceSummary();
+      const lv = getPlayerLevel();
+      const completedCount = getCompletedMissionsCount();
+      const totalStars = getTotalStars();
+
+      document.getElementById('header-balance').textContent = formatBaht(fin.balance);
+      document.getElementById('dash-player-name').textContent = state.playerName;
+      document.getElementById('dash-level-badge').textContent = `ระดับ ${lv.level}: ${lv.title}`;
+      document.getElementById('dash-score').textContent = state.score;
+      document.getElementById('dash-coins').textContent = state.coins;
+      document.getElementById('dash-stars').textContent = totalStars;
+
+      document.getElementById('dash-balance').textContent = formatBaht(fin.balance);
+      document.getElementById('dash-income').textContent = formatBaht(fin.totalIncome);
+      document.getElementById('dash-expense').textContent = formatBaht(fin.totalExpense);
+      document.getElementById('dash-savings').textContent = formatBaht(fin.savings);
+
+      // Mascot Dynamic Speech
+      const speechEl = document.getElementById('dash-mascot-speech');
+      if (completedCount === 5) {
+        speechEl.innerHTML = `"สุดยอดไปเลย <strong>${escapeHtml(state.playerName)}</strong>! คุณพิชิตครบทั้ง 5 ด่านแล้ว ลองไปดูรายงานสรุปผลและกราฟของคุณกันเถอะ!"`;
+      } else if (fin.savings >= state.savingsGoal.target && state.savingsGoal.target > 0) {
+        speechEl.innerHTML = `"เย้! คุณออมเงินครบเป้าหมาย <strong>${escapeHtml(state.savingsGoal.name)}</strong> แล้ว เก่งมากเลย!"`;
+      } else if (completedCount > 0) {
+        speechEl.innerHTML = `"เยี่ยมมาก! คุณผ่านไปแล้ว ${completedCount} ด่าน เก็บสะสมได้ ${totalStars} ดาว ลุยด่านต่อไปกันเลย!"`;
+      } else {
+        speechEl.innerHTML = `"สวัสดี! เราชื่อ <strong>น้องสตางค์</strong> พร้อมจะออกผจญภัยพิชิตภารกิจการเงิน 5 ด่านแล้วหรือยัง?"`;
+      }
+
+      // Progress Bar & Next Mission
+      document.getElementById('dash-mission-count').textContent = `${completedCount} / 5 ด่าน`;
+      document.getElementById('dash-progress-bar').style.width = `${(completedCount / 5) * 100}%`;
+
+      let nextMission = MISSION_META.find(m => !state.missions[m.id].completed) || MISSION_META[4];
+      document.getElementById('dash-next-mission-title').textContent = completedCount === 5
+        ? 'พิชิตครบทุกด่านแล้ว! (เล่นซ้ำเพื่อเก็บ 15 ดาว)'
+        : nextMission.title;
+      document.getElementById('dash-next-mission-desc').textContent = completedCount === 5
+        ? 'คุณสามารถกลับไปเล่นด่านต่างๆ เพื่อทำคะแนนสูงสุดใหม่ได้ตลอดเวลา'
+        : nextMission.shortDesc;
+
+      // Savings Goal Widget
+      const goal = state.savingsGoal;
+      const pct = goal.target > 0 ? Math.min(100, Math.round((fin.savings / goal.target) * 100)) : 0;
+      const remaining = Math.max(0, goal.target - fin.savings);
+      const dailyNeed = goal.days > 0 ? Math.ceil(remaining / goal.days) : remaining;
+
+      document.getElementById('dash-goal-name').textContent = goal.name;
+      document.getElementById('dash-goal-current').textContent = formatBaht(fin.savings);
+      document.getElementById('dash-goal-target').textContent = formatBaht(goal.target);
+      document.getElementById('dash-goal-percent').textContent = `${pct}%`;
+      document.getElementById('dash-goal-bar').style.width = `${pct}%`;
+      document.getElementById('dash-goal-daily').textContent = remaining === 0
+        ? '🎉 ยินดีด้วย! คุณออมเงินบรรลุเป้าหมายนี้แล้ว!'
+        : `แนะนำออมวันละ ${formatBaht(dailyNeed)} เพื่อพิชิตเป้าหมายภายใน ${goal.days} วัน`;
+    }
+
+    function goToNextMission() {
+      const next = MISSION_META.find(m => !state.missions[m.id].completed) || MISSION_META[0];
+      switchTab('missions');
+      openMission(next.id);
+    }
+
+    // =========================================================================
+    // 7. VIRTUAL WALLET LOGIC
+    // =========================================================================
+    function setTxType(type) {
+      currentTxType = type;
+      const btnInc = document.getElementById('btn-type-income');
+      const btnExp = document.getElementById('btn-type-expense');
+
+      if (type === 'income') {
+        btnInc.className = 'py-2.5 rounded-xl font-bold text-sm transition bg-emerald-500 text-white shadow';
+        btnExp.className = 'py-2.5 rounded-xl font-bold text-sm transition text-slate-600 hover:bg-white';
+      } else {
+        btnExp.className = 'py-2.5 rounded-xl font-bold text-sm transition bg-rose-500 text-white shadow';
+        btnInc.className = 'py-2.5 rounded-xl font-bold text-sm transition text-slate-600 hover:bg-white';
+      }
+
+      const select = document.getElementById('tx-category');
+      const cats = type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+      select.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    function handleAddTransaction(e) {
+      e.preventDefault();
+      const category = document.getElementById('tx-category').value;
+      const amount = Math.round(Number(document.getElementById('tx-amount').value));
+      const note = document.getElementById('tx-note').value.trim();
+
+      if (!amount || amount <= 0) {
+        showToast('กรุณาระบุจำนวนเงินที่มากกว่า 0 บาท', 'warning');
+        return;
+      }
+
+      const fin = getFinanceSummary();
+      if (currentTxType === 'expense' && amount > fin.balance) {
+        showToast(`เงินคงเหลือไม่เพียงพอ! คุณมีเงินคงเหลือ ${formatBaht(fin.balance)}`, 'error');
+        return;
+      }
+
+      state.transactions.unshift({
+        id: 'tx-' + Date.now(),
+        type: currentTxType,
+        category,
+        amount,
+        note: note || category,
+        date: new Date().toISOString().split('T')[0]
+      });
+
+      // Small gamification reward for tracking finances (first 10 entries)
+      if (state.transactions.length <= 10) {
+        state.coins += 5;
+      }
+
+      saveState();
+      document.getElementById('tx-amount').value = '';
+      document.getElementById('tx-note').value = '';
+      renderAll();
+      showToast(
+        currentTxType === 'income'
+          ? `บันทึกรายรับ ${formatBaht(amount)} เรียบร้อย!`
+          : `บันทึกรายจ่าย ${formatBaht(amount)} เรียบร้อย!`,
+        'success'
+      );
+    }
+
+    function handleSavingsTransfer(action) {
+      const input = document.getElementById('savings-input');
+      const amount = Math.round(Number(input.value));
+      if (!amount || amount <= 0) {
+        showToast('กรุณาระบุจำนวนเงินที่ต้องการ', 'warning');
+        return;
+      }
+
+      const fin = getFinanceSummary();
+      if (action === 'deposit') {
+        if (amount > fin.balance) {
+          showToast(`เงินในกระเป๋าไม่พอออม! คงเหลือ ${formatBaht(fin.balance)}`, 'error');
+          return;
+        }
+        const wasBelowGoal = state.savings < state.savingsGoal.target;
+        state.savings += amount;
+        state.coins += 10;
+        input.value = '';
+        saveState();
+        renderAll();
+
+        if (wasBelowGoal && state.savings >= state.savingsGoal.target) {
+          launchConfetti();
+          showToast(`🎉 ยินดีด้วย! คุณออมเงินครบเป้าหมาย "${state.savingsGoal.name}" แล้ว!`, 'success');
+        } else {
+          showToast(`หยอดกระปุกออมเงิน ${formatBaht(amount)} สำเร็จ! (+10 เหรียญ)`, 'success');
+        }
+      } else {
+        if (amount > state.savings) {
+          showToast(`เงินออมไม่เพียงพอ! คุณมีเงินออมสะสม ${formatBaht(state.savings)}`, 'error');
+          return;
+        }
+        state.savings -= amount;
+        input.value = '';
+        saveState();
+        renderAll();
+        showToast(`ถอนเงินออม ${formatBaht(amount)} กลับเข้ากระเป๋าแล้ว`, 'info');
+      }
+    }
+
+    function setTxFilter(filter) {
+      currentTxFilter = filter;
+      ['all', 'income', 'expense'].forEach(f => {
+        const el = document.getElementById('filter-' + f);
+        el.className = f === filter
+          ? 'px-3 py-1.5 rounded-xl text-xs font-bold bg-orange-500 text-white'
+          : 'px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600';
+      });
+      renderWallet();
+    }
+
+    function renderWallet() {
+      const fin = getFinanceSummary();
+      document.getElementById('wallet-balance').textContent = formatBaht(fin.balance);
+      document.getElementById('wallet-income').textContent = formatBaht(fin.totalIncome);
+      document.getElementById('wallet-expense').textContent = formatBaht(fin.totalExpense);
+      document.getElementById('wallet-savings').textContent = formatBaht(fin.savings);
+
+      const listEl = document.getElementById('tx-list');
+      const filtered = state.transactions.filter(tx => currentTxFilter === 'all' || tx.type === currentTxFilter);
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `
+          <div class="text-center py-12 text-slate-400">
+            <i class="fa-solid fa-receipt text-4xl mb-2 block"></i>
+            <p class="font-medium">ยังไม่มีรายการในหมวดหมู่นี้</p>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(tx => {
+        const isInc = tx.type === 'income';
+        return `
+          <div class="flex items-center justify-between gap-3 p-3.5 rounded-2xl border border-slate-100 hover:border-orange-200 bg-slate-50/70 transition">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center ${isInc ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-500'}">
+                <i class="fa-solid ${isInc ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="font-bold text-slate-800 text-sm truncate">${escapeHtml(tx.note)}</div>
+                <div class="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
+                  <span class="px-2 py-0.5 rounded-md bg-white border border-slate-200 font-medium">${escapeHtml(tx.category)}</span>
+                  <span>${tx.date}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="font-extrabold text-base ${isInc ? 'text-emerald-600' : 'text-rose-500'}">
+                ${isInc ? '+' : '-'}${formatBaht(tx.amount)}
+              </span>
+              <button onclick="openEditTxModal('${tx.id}')" class="w-8 h-8 rounded-lg bg-white hover:bg-orange-100 text-slate-500 hover:text-orange-600 border border-slate-200 flex items-center justify-center transition" title="แก้ไข">
+                <i class="fa-solid fa-pen text-xs"></i>
+              </button>
+              <button onclick="confirmDeleteTx('${tx.id}')" class="w-8 h-8 rounded-lg bg-white hover:bg-rose-100 text-slate-500 hover:text-rose-600 border border-slate-200 flex items-center justify-center transition" title="ลบ">
+                <i class="fa-solid fa-trash text-xs"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openEditTxModal(txId) {
+      const tx = state.transactions.find(t => t.id === txId);
+      if (!tx) return;
+      const cats = tx.type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+      openModal(`
+        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square text-orange-500"></i> แก้ไขรายการ (${tx.type === 'income' ? 'รายรับ' : 'รายจ่าย'})
+        </h3>
+        <form onsubmit="saveEditTx(event, '${tx.id}')" class="space-y-3.5">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">หมวดหมู่</label>
+            <select id="edit-tx-cat" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200">
+              ${cats.map(c => `<option value="${c}" ${c === tx.category ? 'selected' : ''}>${c}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">จำนวนเงิน (บาท)</label>
+            <input id="edit-tx-amount" type="number" min="1" required value="${tx.amount}" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 font-bold" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">รายละเอียด</label>
+            <input id="edit-tx-note" type="text" maxlength="80" required value="${escapeHtml(tx.note)}" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200" />
+          </div>
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <button type="button" onclick="closeModal()" class="py-3 rounded-2xl bg-slate-100 font-bold text-slate-600">ยกเลิก</button>
+            <button type="submit" class="py-3 rounded-2xl bg-orange-500 text-white font-bold shadow-playful-orange btn-game">บันทึกการแก้ไข</button>
+          </div>
+        </form>
+      `);
+    }
+
+    function saveEditTx(e, txId) {
+      e.preventDefault();
+      const tx = state.transactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      const newAmount = Math.round(Number(document.getElementById('edit-tx-amount').value));
+      const newCat = document.getElementById('edit-tx-cat').value;
+      const newNote = document.getElementById('edit-tx-note').value.trim();
+
+      if (!newAmount || newAmount <= 0) {
+        showToast('จำนวนเงินต้องมากกว่า 0 บาท', 'warning');
+        return;
+      }
+
+      // Check projected balance
+      const fin = getFinanceSummary();
+      const projectedBalance = tx.type === 'income'
+        ? fin.balance - tx.amount + newAmount
+        : fin.balance + tx.amount - newAmount;
+
+      if (projectedBalance < 0) {
+        showToast('ไม่สามารถแก้ไขได้ เนื่องจากจะทำให้ยอดเงินคงเหลือติดลบ', 'error');
+        return;
+      }
+
+      tx.amount = newAmount;
+      tx.category = newCat;
+      tx.note = newNote || newCat;
+      saveState();
+      closeModal();
+      renderAll();
+      showToast('แก้ไขรายการเรียบร้อยแล้ว', 'success');
+    }
+
+    function confirmDeleteTx(txId) {
+      const tx = state.transactions.find(t => t.id === txId);
+      if (!tx) return;
+      openModal(`
+        <div class="text-center">
+          <div class="w-14 h-14 mx-auto rounded-full bg-rose-100 text-rose-500 flex items-center justify-center text-2xl mb-3">
+            <i class="fa-solid fa-trash"></i>
+          </div>
+          <h3 class="text-lg font-bold text-slate-800">ยืนยันการลบรายการ?</h3>
+          <p class="text-sm text-slate-600 mt-1">"${escapeHtml(tx.note)}" (${formatBaht(tx.amount)})</p>
+          <div class="grid grid-cols-2 gap-3 mt-5">
+            <button onclick="closeModal()" class="py-2.5 rounded-2xl bg-slate-100 font-bold text-slate-600">ยกเลิก</button>
+            <button onclick="executeDeleteTx('${tx.id}')" class="py-2.5 rounded-2xl bg-rose-500 text-white font-bold">ลบรายการ</button>
+          </div>
+        </div>
+      `);
+    }
+
+    function executeDeleteTx(txId) {
+      const idx = state.transactions.findIndex(t => t.id === txId);
+      if (idx === -1) return;
+      const tx = state.transactions[idx];
+      const fin = getFinanceSummary();
+
+      if (tx.type === 'income' && (fin.balance - tx.amount) < 0) {
+        closeModal();
+        showToast('ไม่สามารถลบรายรับนี้ได้ เพราะจะทำให้ยอดเงินคงเหลือติดลบ', 'error');
+        return;
+      }
+
+      state.transactions.splice(idx, 1);
+      saveState();
+      closeModal();
+      renderAll();
+      showToast('ลบรายการเรียบร้อยแล้ว', 'info');
+    }
+
+    // =========================================================================
+    // 8. MONEY MISSIONS (5 PLAYABLE GAME STAGES)
+    // =========================================================================
+    function renderMissionMap() {
+      const mapEl = document.getElementById('mission-map-view');
+      mapEl.innerHTML = MISSION_META.map(m => {
+        const progress = state.missions[m.id];
+        const starsHtml = [1, 2, 3].map(i =>
+          `<i class="fa-solid fa-star ${i <= progress.stars ? 'text-yellow-400' : 'text-slate-200'}"></i>`
+        ).join('');
+
+        return `
+          <div class="bg-white rounded-3xl border-2 ${progress.completed ? 'border-emerald-200' : 'border-orange-100'} shadow-card overflow-hidden flex flex-col justify-between">
+            <div>
+              <div class="bg-gradient-to-r ${m.gradient} p-5 text-white relative">
+                <div class="flex items-center justify-between">
+                  <span class="bg-white/25 px-3 py-1 rounded-full text-xs font-bold">ด่านที่ ${m.id}</span>
+                  ${progress.completed
+                    ? '<span class="bg-emerald-400 text-emerald-950 px-2.5 py-1 rounded-full text-xs font-extrabold"><i class="fa-solid fa-check mr-1"></i>ผ่านแล้ว</span>'
+                    : '<span class="bg-black/20 px-2.5 py-1 rounded-full text-xs font-semibold">ยังไม่ผ่าน</span>'}
+                </div>
+                <div class="mt-3 flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-2xl bg-white/25 flex items-center justify-center text-2xl shrink-0">
+                    <i class="fa-solid ${m.icon}"></i>
+                  </div>
+                  <h3 class="text-lg font-extrabold leading-snug">${m.title.replace(/^ด่านที่ \d+: /, '')}</h3>
+                </div>
+              </div>
+              <div class="p-5">
+                <p class="text-sm text-slate-600 font-body">${m.shortDesc}</p>
+                <div class="mt-4 flex items-center justify-between bg-slate-50 rounded-2xl px-3.5 py-2.5">
+                  <div class="flex items-center gap-1 text-lg">${starsHtml}</div>
+                  <div class="text-xs font-bold text-slate-500">คะแนนสูงสุด: <span class="text-orange-600">${progress.bestScore}</span>/${m.maxScore}</div>
+                </div>
+              </div>
+            </div>
+            <div class="px-5 pb-5">
+              <button onclick="openMission(${m.id})" class="w-full py-3 rounded-2xl bg-gradient-to-r ${m.gradient} text-white font-bold shadow-playful btn-game flex items-center justify-center gap-2">
+                <i class="fa-solid ${progress.completed ? 'fa-rotate-right' : 'fa-play'}"></i>
+                ${progress.completed ? 'เล่นอีกครั้ง' : 'เริ่มภารกิจ'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openMission(missionId) {
+      document.getElementById('mission-map-view').classList.add('hidden');
+      document.getElementById('mission-stage-view').classList.remove('hidden');
+      document.getElementById('btn-back-mission-map').classList.remove('hidden');
+
+      if (missionId === 1) startMission1();
+      else if (missionId === 2) startMission2();
+      else if (missionId === 3) startMission3();
+      else if (missionId === 4) startMission4();
+      else if (missionId === 5) startMission5();
+    }
+
+    function closeMissionStage() {
+      activeMissionSession = null;
+      document.getElementById('mission-map-view').classList.remove('hidden');
+      document.getElementById('mission-stage-view').classList.add('hidden');
+      document.getElementById('btn-back-mission-map').classList.add('hidden');
+      renderAll();
+    }
+
+    // ---------- MISSION 1: 7-DAY BUDGET PLANNER ----------
+    function startMission1() {
+      activeMissionSession = {
+        id: 1,
+        budget: 1000,
+        alloc: { food: 400, travel: 150, study: 150, fun: 150, savings: 150 }
+      };
+      renderMission1();
+    }
+
+    function renderMission1() {
+      const s = activeMissionSession;
+      const total = s.alloc.food + s.alloc.travel + s.alloc.study + s.alloc.fun + s.alloc.savings;
+      const diff = s.budget - total;
+      const isOver = diff < 0;
+
+      const stage = document.getElementById('mission-stage-view');
+      stage.innerHTML = `
+        <div class="max-w-2xl mx-auto">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center text-2xl">
+              <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-slate-800">ด่านที่ 1: นักวางแผนรายรับรายจ่าย</h3>
+              <p class="text-sm text-slate-500">คุณได้รับเงินจำลอง <strong>฿1,000</strong> จงจัดสรรงบให้เพียงพอตลอด 7 วัน</p>
+            </div>
+          </div>
+
+          <!-- Budget Meter -->
+          <div class="p-4 rounded-2xl border-2 ${isOver ? 'bg-rose-50 border-rose-300' : 'bg-emerald-50 border-emerald-200'} mb-6">
+            <div class="flex items-center justify-between font-bold text-sm sm:text-base">
+              <span>งบที่จัดสรรแล้ว: <span id="m1-total" class="${isOver ? 'text-rose-600' : 'text-emerald-700'}">${formatBaht(total)}</span> / ฿1,000</span>
+              <span id="m1-remain" class="${isOver ? 'text-rose-600' : 'text-slate-600'}">
+                ${isOver ? 'เกินงบ ' + formatBaht(Math.abs(diff)) + '!' : 'เหลือจัดสรร ' + formatBaht(diff)}
+              </span>
+            </div>
+            <div class="w-full h-3.5 bg-white rounded-full overflow-hidden mt-2 border border-slate-200">
+              <div id="m1-bar" class="h-full transition-all duration-200 ${isOver ? 'bg-rose-500' : 'bg-emerald-500'}" style="width: ${Math.min(100, (total / 1000) * 100)}%"></div>
+            </div>
+          </div>
+
+          <!-- Sliders -->
+          <div class="space-y-4">
+            ${renderM1Slider('food', 'ค่าอาหาร (7 วัน)', 'จำเป็น • แนะนำ ฿350–฿500', 'fa-utensils text-orange-500', s.alloc.food)}
+            ${renderM1Slider('travel', 'ค่าเดินทาง', 'จำเป็น • แนะนำ ฿100–฿200', 'fa-bus text-sky-500', s.alloc.travel)}
+            ${renderM1Slider('study', 'ค่าอุปกรณ์การเรียน', 'จำเป็น • แนะนำ ฿100–฿200', 'fa-book text-indigo-500', s.alloc.study)}
+            ${renderM1Slider('fun', 'ค่าความบันเทิง/ขนม', 'ความต้องการ • ไม่ควรเกิน ฿200', 'fa-gamepad text-pink-500', s.alloc.fun)}
+            ${renderM1Slider('savings', 'เงินออมประจำสัปดาห์', 'เป้าหมาย • แนะนำอย่างน้อย ฿100', 'fa-piggy-bank text-emerald-500', s.alloc.savings)}
+          </div>
+
+          <button onclick="evaluateMission1()" class="mt-6 w-full py-4 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg shadow-playful-orange btn-game">
+            <i class="fa-solid fa-check-double mr-2"></i> ตรวจสอบแผนการใช้เงิน
+          </button>
+          <div id="m1-result" class="mt-5"></div>
+        </div>
+      `;
+    }
+
+    function renderM1Slider(key, label, hint, iconClass, val) {
+      return `
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <div class="font-bold text-slate-800 text-sm sm:text-base"><i class="fa-solid ${iconClass} mr-1.5"></i>${label}</div>
+              <div class="text-xs text-slate-500">${hint}</div>
+            </div>
+            <div id="m1-val-${key}" class="text-lg font-extrabold text-orange-600 bg-white px-3 py-1 rounded-xl border border-orange-200">${formatBaht(val)}</div>
+          </div>
+          <input type="range" min="0" max="700" step="10" value="${val}" oninput="updateM1Alloc('${key}', this.value)" class="w-full" />
+        </div>
+      `;
+    }
+
+    function updateM1Alloc(key, val) {
+      const s = activeMissionSession;
+      s.alloc[key] = Number(val);
+      document.getElementById('m1-val-' + key).textContent = formatBaht(val);
+
+      const total = s.alloc.food + s.alloc.travel + s.alloc.study + s.alloc.fun + s.alloc.savings;
+      const diff = s.budget - total;
+      const isOver = diff < 0;
+
+      const totalEl = document.getElementById('m1-total');
+      const remainEl = document.getElementById('m1-remain');
+      const barEl = document.getElementById('m1-bar');
+
+      totalEl.textContent = formatBaht(total);
+      totalEl.className = isOver ? 'text-rose-600' : 'text-emerald-700';
+      remainEl.textContent = isOver ? `เกินงบ ${formatBaht(Math.abs(diff))}!` : `เหลือจัดสรร ${formatBaht(diff)}`;
+      remainEl.className = isOver ? 'text-rose-600' : 'text-slate-600';
+      barEl.style.width = `${Math.min(100, (total / 1000) * 100)}%`;
+      barEl.className = `h-full transition-all duration-200 ${isOver ? 'bg-rose-500' : 'bg-emerald-500'}`;
+    }
+
+    function evaluateMission1() {
+      const a = activeMissionSession.alloc;
+      const total = a.food + a.travel + a.study + a.fun + a.savings;
+
+      if (total > 1000) {
+        showToast('งบประมาณรวมเกิน ฿1,000! กรุณาปรับลดยอดให้ไม่เกินงบที่มี', 'error');
+        return;
+      }
+
+      const notes = [];
+      let score = 0;
+
+      if (a.food >= 350) { score += 30; notes.push('✅ งบอาหารเพียงพอต่อการกินอิ่มครบ 7 วัน'); }
+      else { notes.push('⚠️ งบอาหารน้อยเกินไป (ควรจัดสรรอย่างน้อย ฿350 สำหรับ 7 วัน)'); }
+
+      if (a.travel >= 100) { score += 20; notes.push('✅ งบค่าเดินทางเหมาะสม'); }
+      else { notes.push('⚠️ งบค่าเดินทางอาจไม่พอสำหรับไป-กลับโรงเรียนทั้งสัปดาห์ (แนะนำ ฿100+)'); }
+
+      if (a.study >= 100) { score += 20; notes.push('✅ มีงบสำหรับอุปกรณ์การเรียนเพียงพอ'); }
+      else { notes.push('⚠️ ควรเผื่องบอุปกรณ์การเรียนอย่างน้อย ฿100'); }
+
+      if (a.fun <= 200) { score += 20; notes.push('✅ ควบคุมค่าความบันเทิงได้ดี ไม่ฟุ่มเฟือย'); }
+      else { notes.push('⚠️ งบความบันเทิงสูงไปนิด (ไม่ควรเกิน ฿200)'); }
+
+      if (a.savings >= 100) { score += 30; notes.push('✅ เยี่ยมมาก! คุณแบ่งเงินออมได้อย่างน้อย 10% ของรายได้'); }
+      else { notes.push('⚠️ ควรแบ่งเงินออมอย่างน้อย ฿100 (10% ของ ฿1,000)'); }
+
+      const passed = score >= 80;
+      const stars = score >= 110 ? 3 : (score >= 90 ? 2 : (passed ? 1 : 0));
+
+      if (passed) {
+        state.correctAnswers += 1;
+        awardMissionRewards(1, score, stars, 30);
+      } else {
+        state.wrongAnswers += 1;
+        saveState();
+      }
+
+      document.getElementById('m1-result').innerHTML = `
+        <div class="p-5 rounded-2xl border-2 ${passed ? 'bg-emerald-50 border-emerald-300' : 'bg-amber-50 border-amber-300'} animate-pop">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-lg font-extrabold ${passed ? 'text-emerald-800' : 'text-amber-800'}">
+              ${passed ? '🎉 ผ่านด่านที่ 1 แล้ว!' : '💪 ลองปรับแผนอีกนิดนะ!'}
+            </h4>
+            <span class="font-extrabold text-xl text-orange-600">${score} / 120 คะแนน</span>
+          </div>
+          <ul class="space-y-1.5 text-sm text-slate-700 font-body mb-4">
+            ${notes.map(n => `<li>${n}</li>`).join('')}
+          </ul>
+          <div class="flex flex-wrap gap-3">
+            ${passed
+              ? `<button onclick="openMission(2)" class="px-5 py-2.5 rounded-xl bg-emerald-500 text-white font-bold shadow-playful-mint btn-game">ไปด่านที่ 2 ต่อเลย <i class="fa-solid fa-arrow-right ml-1"></i></button>`
+              : ''}
+            <button onclick="closeMissionStage()" class="px-5 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-slate-700">กลับแผนที่ภารกิจ</button>
+          </div>
+        </div>
+      `;
+      renderAll();
+    }
+
+    // ---------- MISSION 2: SMART SHOPPER ----------
+    function startMission2() {
+      activeMissionSession = { id: 2, step: 0, score: 0, correct: 0, answered: false };
+      renderMission2();
+    }
+
+    function renderMission2() {
+      const s = activeMissionSession;
+      const stage = document.getElementById('mission-stage-view');
+
+      if (s.step >= M2_SCENARIOS.length) {
+        const stars = s.correct === 3 ? 3 : (s.correct === 2 ? 2 : (s.correct === 1 ? 1 : 0));
+        const passed = s.correct >= 2;
+        if (passed) awardMissionRewards(2, s.score, stars, 40);
+
+        stage.innerHTML = renderMissionEndCard(
+          2,
+          passed,
+          s.score,
+          150,
+          stars,
+          `คุณตัดสินใจเลือกซื้อของได้อย่างฉลาด ${s.correct} จาก ${M2_SCENARIOS.length} สถานการณ์`,
+          3
+        );
+        renderAll();
+        return;
+      }
+
+      const sc = M2_SCENARIOS[s.step];
+      stage.innerHTML = `
+        <div class="max-w-2xl mx-auto">
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">ด่านที่ 2 • ข้อที่ ${s.step + 1} / ${M2_SCENARIOS.length}</span>
+            <span class="px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-sm font-extrabold">งบที่มี: ${formatBaht(sc.budget)}</span>
+          </div>
+
+          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-5 mb-5">
+            <h3 class="text-xl font-extrabold text-emerald-900 mb-2">${sc.title}</h3>
+            <p class="text-slate-700 font-body">${sc.story}</p>
+          </div>
+
+          <div id="m2-choices" class="space-y-3">
+            ${sc.choices.map((c, idx) => `
+              <button onclick="answerMission2(${idx})" class="w-full text-left p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 transition font-semibold text-slate-800 flex items-center justify-between gap-3">
+                <span>${c.label}</span>
+                <span class="shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">จ่าย ${formatBaht(c.cost)}</span>
+              </button>
+            `).join('')}
+          </div>
+
+          <div id="m2-feedback" class="mt-5"></div>
+        </div>
+      `;
+    }
+
+    function answerMission2(choiceIdx) {
+      const s = activeMissionSession;
+      if (s.answered) return;
+      s.answered = true;
+
+      const sc = M2_SCENARIOS[s.step];
+      const choice = sc.choices[choiceIdx];
+      const remain = sc.budget - choice.cost;
+
+      s.score += choice.points;
+      if (choice.correct) {
+        s.correct += 1;
+        state.correctAnswers += 1;
+      } else {
+        state.wrongAnswers += 1;
+      }
+      saveState();
+
+      document.getElementById('m2-choices').querySelectorAll('button').forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === choiceIdx) {
+          btn.classList.add(choice.correct ? 'bg-emerald-100' : 'bg-rose-100', choice.correct ? 'border-emerald-500' : 'border-rose-500');
+        } else {
+          btn.classList.add('opacity-50');
+        }
+      });
+
+      document.getElementById('m2-feedback').innerHTML = `
+        <div class="p-4 rounded-2xl border-2 ${choice.correct ? 'bg-emerald-50 border-emerald-300' : 'bg-rose-50 border-rose-300'} animate-pop">
+          <div class="font-extrabold text-base ${choice.correct ? 'text-emerald-800' : 'text-rose-800'} mb-1">
+            ${choice.correct ? '✅ ฉลาดเลือกมาก! (+' + choice.points + ' คะแนน)' : '❌ ยังไม่ใช่ทางเลือกที่ดีที่สุด (+' + choice.points + ' คะแนน)'}
+          </div>
+          <p class="text-sm text-slate-700 font-body mb-2">${choice.feedback}</p>
+          <div class="text-xs font-bold text-slate-600 bg-white/80 inline-block px-3 py-1 rounded-lg mb-3">
+            ผลกระทบต่อเงินในสถานการณ์นี้: เหลือเงิน ${formatBaht(remain)}
+          </div>
+          <div>
+            <button onclick="nextMission2()" class="px-5 py-2.5 rounded-xl bg-emerald-500 text-white font-bold shadow-playful-mint btn-game">
+              ${s.step + 1 < M2_SCENARIOS.length ? 'ข้อถัดไป' : 'ดูผลสรุปด่านที่ 2'} <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function nextMission2() {
+      activeMissionSession.step += 1;
+      activeMissionSession.answered = false;
+      renderMission2();
+    }
+
+    // ---------- MISSION 3: SAVINGS GOAL CHALLENGE ----------
+    function startMission3() {
+      activeMissionSession = { id: 3 };
+      renderMission3();
+    }
+
+    function renderMission3() {
+      const fin = getFinanceSummary();
+      const g = state.savingsGoal;
+      const pct = g.target > 0 ? Math.min(100, Math.round((fin.savings / g.target) * 100)) : 0;
+
+      const stage = document.getElementById('mission-stage-view');
+      stage.innerHTML = `
+        <div class="max-w-2xl mx-auto space-y-5">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-2xl">
+              <i class="fa-solid fa-bullseye"></i>
+            </div>
+            <div>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-slate-800">ด่านที่ 3: ภารกิจพิชิตเป้าหมายการออม</h3>
+              <p class="text-sm text-slate-500">เลือกเป้าหมาย คำนวณแผนการออม และทดลองออมเงินจริงจากกระเป๋าเงินจำลอง</p>
+            </div>
+          </div>
+
+          <!-- Preset Goals -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-2">1. เลือกเป้าหมายการออมยอดนิยม (หรือพิมพ์เอง)</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+              <button type="button" onclick="applyM3Preset('ซื้อกระเป๋านักเรียน', 600, 30)" class="p-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-xs font-bold text-purple-800">🎒 กระเป๋านักเรียน (฿600)</button>
+              <button type="button" onclick="applyM3Preset('ซื้อหนังสือความรู้', 300, 15)" class="p-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-xs font-bold text-sky-800">📚 หนังสือ (฿300)</button>
+              <button type="button" onclick="applyM3Preset('ซื้ออุปกรณ์การเรียน', 400, 20)" class="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-xs font-bold text-emerald-800">✏️ อุปกรณ์เรียน (฿400)</button>
+              <button type="button" onclick="applyM3Preset('เก็บเงินสำรองฉุกเฉิน', 1000, 30)" class="p-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-xs font-bold text-amber-800">🛡️ เงินสำรอง (฿1,000)</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="text-xs font-semibold text-slate-600">ชื่อเป้าหมาย</label>
+                <input id="m3-name" type="text" value="${escapeHtml(g.name)}" oninput="calcM3Preview()" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border-2 border-slate-200 font-semibold text-sm" />
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-600">จำนวนเงินเป้าหมาย (บาท)</label>
+                <input id="m3-target" type="number" min="50" value="${g.target}" oninput="calcM3Preview()" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm" />
+              </div>
+              <div>
+                <label class="text-xs font-semibold text-slate-600">ระยะเวลาที่ต้องการออม (วัน)</label>
+                <input id="m3-days" type="number" min="1" max="365" value="${g.days}" oninput="calcM3Preview()" class="w-full mt-1 px-3.5 py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Auto-Calculated Saving Plan -->
+          <div id="m3-calc-box" class="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl p-4">
+            <!-- Updated by JS -->
+          </div>
+
+          <!-- Real Deposit Step to Complete Mission -->
+          <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-emerald-900 text-sm">ความคืบหน้าเงินออมปัจจุบัน (${formatBaht(fin.savings)} / ${formatBaht(g.target)})</span>
+              <span class="font-extrabold text-emerald-700 text-sm">${pct}%</span>
+            </div>
+            <div class="w-full h-3.5 bg-white rounded-full overflow-hidden border border-emerald-200 mb-3">
+              <div class="h-full bg-gradient-to-r from-emerald-400 to-purple-500 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+            <p class="text-xs text-slate-600 mb-2">2. เริ่มต้นลงมือจริง! ออมเงินก้อนแรกจากกระเป๋าเงินจำลอง (ยอดคงเหลือปัจจุบัน: <strong>${formatBaht(fin.balance)}</strong>)</p>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input id="m3-first-save" type="number" min="10" value="${Math.min(100, Math.max(10, fin.balance))}" class="flex-1 px-4 py-3 rounded-xl border-2 border-emerald-300 font-bold bg-white" placeholder="จำนวนเงินที่จะออม (บาท)" />
+              <button onclick="completeMission3()" class="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-playful-purple btn-game">
+                <i class="fa-solid fa-piggy-bank mr-1"></i> บันทึกเป้าหมาย & ออมเงินเลย!
+              </button>
+            </div>
+          </div>
+
+          <div id="m3-result"></div>
+        </div>
+      `;
+      calcM3Preview();
+    }
+
+    function applyM3Preset(name, target, days) {
+      document.getElementById('m3-name').value = name;
+      document.getElementById('m3-target').value = target;
+      document.getElementById('m3-days').value = days;
+      calcM3Preview();
+    }
+
+    function calcM3Preview() {
+      const target = Math.max(1, Number(document.getElementById('m3-target')?.value) || 0);
+      const days = Math.max(1, Number(document.getElementById('m3-days')?.value) || 1);
+      const perDay = Math.ceil(target / days);
+      const perWeek = Math.ceil(target / Math.max(1, days / 7));
+
+      const box = document.getElementById('m3-calc-box');
+      if (box) {
+        box.innerHTML = `
+          <div class="text-xs font-bold text-purple-600 uppercase mb-1">แผนการออมคำนวณอัตโนมัติ</div>
+          <div class="grid grid-cols-2 gap-3 text-center">
+            <div class="bg-white rounded-xl p-3 border border-purple-100">
+              <div class="text-xs text-slate-500">ต้องออมเฉลี่ยต่อวัน</div>
+              <div class="text-2xl font-extrabold text-purple-600">${formatBaht(perDay)}</div>
+            </div>
+            <div class="bg-white rounded-xl p-3 border border-purple-100">
+              <div class="text-xs text-slate-500">ต้องออมเฉลี่ยต่อสัปดาห์</div>
+              <div class="text-2xl font-extrabold text-emerald-600">${formatBaht(perWeek)}</div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function completeMission3() {
+      const name = document.getElementById('m3-name').value.trim();
+      const target = Math.round(Number(document.getElementById('m3-target').value));
+      const days = Math.round(Number(document.getElementById('m3-days').value));
+      const deposit = Math.round(Number(document.getElementById('m3-first-save').value));
+
+      if (!name || target < 50 || days < 1) {
+        showToast('กรุณากรอกชื่อเป้าหมาย จำนวนเงิน (อย่างน้อย ฿50) และระยะเวลาให้ครบถ้วน', 'warning');
+        return;
+      }
+
+      const fin = getFinanceSummary();
+      if (deposit < 10) {
+        showToast('ลองออมเงินเริ่มต้นอย่างน้อย ฿10 นะครับ', 'warning');
+        return;
+      }
+      if (deposit > fin.balance) {
+        showToast(`เงินในกระเป๋าไม่พอ! คุณมีเงินคงเหลือ ${formatBaht(fin.balance)}`, 'error');
+        return;
+      }
+
+      state.savingsGoal = { name, target, days };
+      state.savings += deposit;
+      state.correctAnswers += 1;
+
+      const ratio = state.savings / target;
+      const stars = ratio >= 0.25 ? 3 : (ratio >= 0.1 ? 2 : 1);
+      const score = stars === 3 ? 120 : (stars === 2 ? 100 : 80);
+
+      awardMissionRewards(3, score, stars, 35);
+      renderAll();
+
+      document.getElementById('m3-result').innerHTML = renderMissionEndCard(
+        3,
+        true,
+        score,
+        120,
+        stars,
+        `บันทึกเป้าหมาย "${escapeHtml(name)}" และออมเงินเพิ่ม ${formatBaht(deposit)} เรียบร้อยแล้ว!`,
+        4
+      );
+    }
+
+    // ---------- MISSION 4: FINANCIAL PROBLEM SOLVER ----------
+    function startMission4() {
+      // Shuffle events and pick 3
+      const shuffled = [...M4_EVENTS].sort(() => Math.random() - 0.5).slice(0, 3);
+      activeMissionSession = {
+        id: 4,
+        events: shuffled,
+        step: 0,
+        simBalance: 500,
+        simSavings: 300,
+        score: 0,
+        correct: 0,
+        answered: false
+      };
+      renderMission4();
+    }
+
+    function renderMission4() {
+      const s = activeMissionSession;
+      const stage = document.getElementById('mission-stage-view');
+
+      if (s.step >= s.events.length) {
+        const stars = s.correct === 3 ? 3 : (s.correct === 2 ? 2 : (s.correct === 1 ? 1 : 0));
+        const passed = s.correct >= 2;
+        if (passed) awardMissionRewards(4, s.score, stars, 40);
+
+        stage.innerHTML = renderMissionEndCard(
+          4,
+          passed,
+          s.score,
+          150,
+          stars,
+          `คุณแก้ไขปัญหาการเงินเฉพาะหน้าได้ดี ${s.correct} จาก 3 เหตุการณ์ (เงินจำลองคงเหลือในด่าน ${formatBaht(s.simBalance)} • เงินออม ${formatBaht(s.simSavings)})`,
+          5
+        );
+        renderAll();
+        return;
+      }
+
+      const ev = s.events[s.step];
+      stage.innerHTML = `
+        <div class="max-w-2xl mx-auto">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-xs font-bold">ด่านที่ 4 • เหตุการณ์สุ่ม ${s.step + 1} / 3</span>
+            <div class="flex gap-2 text-xs font-bold">
+              <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">เงินใช้จ่ายในด่าน: ${formatBaht(s.simBalance)}</span>
+              <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-700">เงินออมในด่าน: ${formatBaht(s.simSavings)}</span>
+            </div>
+          </div>
+
+          <div class="bg-sky-50 border-2 border-sky-200 rounded-3xl p-5 mb-5">
+            <span class="inline-block px-2.5 py-0.5 rounded-lg bg-sky-500 text-white text-xs font-bold mb-2">
+              <i class="fa-solid ${ev.icon} mr-1"></i> ${ev.badge}
+            </span>
+            <h3 class="text-xl font-extrabold text-slate-800 mb-1">${ev.title}</h3>
+            <p class="text-slate-700 font-body">${ev.story}</p>
+          </div>
+
+          <div id="m4-choices" class="space-y-3">
+            ${ev.choices.map((c, idx) => `
+              <button onclick="answerMission4(${idx})" class="w-full text-left p-4 rounded-2xl border-2 border-slate-200 hover:border-sky-400 hover:bg-sky-50/60 transition font-semibold text-slate-800">
+                ${c.label}
+              </button>
+            `).join('')}
+          </div>
+
+          <div id="m4-feedback" class="mt-5"></div>
+        </div>
+      `;
+    }
+
+    function answerMission4(idx) {
+      const s = activeMissionSession;
+      if (s.answered) return;
+      s.answered = true;
+
+      const ev = s.events[s.step];
+      const choice = ev.choices[idx];
+      s.simBalance = Math.max(0, s.simBalance + choice.balanceDelta);
+      s.simSavings = Math.max(0, s.simSavings + choice.savingsDelta);
+      s.score += choice.points;
+
+      if (choice.correct) {
+        s.correct += 1;
+        state.correctAnswers += 1;
+      } else {
+        state.wrongAnswers += 1;
+      }
+      saveState();
+
+      document.getElementById('m4-choices').querySelectorAll('button').forEach((b, i) => {
+        b.disabled = true;
+        if (i === idx) b.classList.add(choice.correct ? 'bg-emerald-100' : 'bg-rose-100', choice.correct ? 'border-emerald-500' : 'border-rose-500');
+        else b.classList.add('opacity-50');
+      });
+
+      document.getElementById('m4-feedback').innerHTML = `
+        <div class="p-4 rounded-2xl border-2 ${choice.correct ? 'bg-emerald-50 border-emerald-300' : 'bg-rose-50 border-rose-300'} animate-pop">
+          <div class="font-extrabold ${choice.correct ? 'text-emerald-800' : 'text-rose-800'} mb-1">
+            ${choice.correct ? '✅ แก้ปัญหาได้ยอดเยี่ยม! (+' + choice.points + ' คะแนน)' : '⚠️ ควรระวังผลกระทบทางการเงิน (+' + choice.points + ' คะแนน)'}
+          </div>
+          <p class="text-sm text-slate-700 font-body mb-2">${choice.feedback}</p>
+          <div class="text-xs font-bold text-slate-600 mb-3">
+            ผลลัพธ์หลังตัดสินใจ: เงินใช้จ่าย ${formatBaht(s.simBalance)} | เงินออม ${formatBaht(s.simSavings)}
+          </div>
+          <button onclick="nextMission4()" class="px-5 py-2.5 rounded-xl bg-sky-500 text-white font-bold shadow-md btn-game">
+            ${s.step + 1 < s.events.length ? 'สุ่มเหตุการณ์ถัดไป' : 'ดูผลสรุปด่านที่ 4'} <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    function nextMission4() {
+      activeMissionSession.step += 1;
+      activeMissionSession.answered = false;
+      renderMission4();
+    }
+
+    // ---------- MISSION 5: CYBER SCAM DETECTIVE ----------
+    function startMission5() {
+      activeMissionSession = { id: 5, step: 0, score: 0, correct: 0, answered: false };
+      renderMission5();
+    }
+
+    function renderMission5() {
+      const s = activeMissionSession;
+      const stage = document.getElementById('mission-stage-view');
+
+      if (s.step >= M5_SCAMS.length) {
+        const stars = s.correct === 5 ? 3 : (s.correct >= 4 ? 2 : (s.correct >= 3 ? 1 : 0));
+        const passed = s.correct >= 3;
+        if (passed) awardMissionRewards(5, s.score, stars, 50);
+
+        stage.innerHTML = renderMissionEndCard(
+          5,
+          passed,
+          s.score,
+          200,
+          stars,
+          `คุณจับพิรุธมิจฉาชีพออนไลน์ได้ถูกต้อง ${s.correct} จาก ${M5_SCAMS.length} เคส!`,
+          null
+        );
+        renderAll();
+        return;
+      }
+
+      const sc = M5_SCAMS[s.step];
+      stage.innerHTML = `
+        <div class="max-w-2xl mx-auto">
+          <div class="flex items-center justify-between mb-4">
+            <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold">
+              <i class="fa-solid fa-user-secret mr-1"></i> ด่านที่ 5 • คดีที่ ${s.step + 1} / ${M5_SCAMS.length}
+            </span>
+            <span class="text-sm font-extrabold text-purple-700">คะแนนสะสมในด่าน: ${s.score}</span>
+          </div>
+
+          <!-- Mock Phone Message Card -->
+          <div class="bg-slate-900 text-white rounded-3xl p-5 mb-5 shadow-lg border-4 border-slate-700">
+            <div class="flex items-center justify-between text-xs text-slate-400 border-b border-slate-700 pb-2.5 mb-3">
+              <span><i class="fa-solid fa-triangle-exclamation text-yellow-400 mr-1"></i> ${sc.channel}</span>
+              <span class="font-mono text-rose-300">${sc.sender}</span>
+            </div>
+            <div class="bg-slate-800 rounded-2xl p-4 text-sm sm:text-base leading-relaxed font-body border border-slate-700">
+              "${sc.message}"
+            </div>
+          </div>
+
+          <p class="text-sm font-bold text-slate-700 mb-3">คุณในฐานะนักสืบการเงิน ควรทำอย่างไร?</p>
+          <div id="m5-choices" class="space-y-3">
+            ${sc.choices.map((c, idx) => `
+              <button onclick="answerMission5(${idx})" class="w-full text-left p-4 rounded-2xl border-2 border-slate-200 hover:border-purple-400 hover:bg-purple-50/50 transition font-semibold text-slate-800">
+                ${c.text}
+              </button>
+            `).join('')}
+          </div>
+
+          <div id="m5-feedback" class="mt-5"></div>
+        </div>
+      `;
+    }
+
+    function answerMission5(idx) {
+      const s = activeMissionSession;
+      if (s.answered) return;
+      s.answered = true;
+
+      const sc = M5_SCAMS[s.step];
+      const choice = sc.choices[idx];
+
+      if (choice.correct) {
+        s.score += 40;
+        s.correct += 1;
+        state.correctAnswers += 1;
+      } else {
+        state.wrongAnswers += 1;
+      }
+      saveState();
+
+      document.getElementById('m5-choices').querySelectorAll('button').forEach((b, i) => {
+        b.disabled = true;
+        if (i === idx) b.classList.add(choice.correct ? 'bg-emerald-100' : 'bg-rose-100', choice.correct ? 'border-emerald-500' : 'border-rose-500');
+        else if (sc.choices[i].correct) b.classList.add('bg-emerald-50', 'border-emerald-400');
+        else b.classList.add('opacity-50');
+      });
+
+      document.getElementById('m5-feedback').innerHTML = `
+        <div class="p-4 rounded-2xl border-2 ${choice.correct ? 'bg-emerald-50 border-emerald-300' : 'bg-rose-50 border-rose-300'} animate-pop">
+          <div class="font-extrabold ${choice.correct ? 'text-emerald-800' : 'text-rose-800'} mb-1">
+            ${choice.correct ? '🕵️ จับไต๋มิจฉาชีพได้แม่นมาก! (+40 คะแนน)' : '🚨 ระวัง! คุณเกือบตกเป็นเหยื่อมิจฉาชีพแล้ว'}
+          </div>
+          <p class="text-sm text-slate-700 font-body mb-2">${sc.explanation}</p>
+          <div class="bg-white/90 rounded-xl px-3.5 py-2 text-xs font-bold text-purple-800 border border-purple-200 mb-3">
+            <i class="fa-solid fa-shield-cat mr-1"></i> ${sc.tip}
+          </div>
+          <button onclick="nextMission5()" class="px-5 py-2.5 rounded-xl bg-purple-600 text-white font-bold shadow-playful-purple btn-game">
+            ${s.step + 1 < M5_SCAMS.length ? 'คดีถัดไป' : 'ดูผลสรุปด่านที่ 5'} <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    function nextMission5() {
+      activeMissionSession.step += 1;
+      activeMissionSession.answered = false;
+      renderMission5();
+    }
+
+    function renderMissionEndCard(missionId, passed, score, maxScore, stars, summaryText, nextId) {
+      const starsHtml = [1, 2, 3].map(i =>
+        `<i class="fa-solid fa-star text-3xl ${i <= stars ? 'text-yellow-400 animate-sparkle' : 'text-slate-200'}"></i>`
+      ).join(' ');
+
+      return `
+        <div class="max-w-lg mx-auto text-center py-4 animate-pop">
+          <div class="mb-3 flex justify-center gap-2">${starsHtml}</div>
+          <h3 class="text-2xl font-extrabold ${passed ? 'text-emerald-600' : 'text-amber-600'}">
+            ${passed ? `🎉 ผ่านภารกิจด่านที่ ${missionId} สำเร็จ!` : `💪 ลองใหม่อีกครั้งนะ!`}
+          </h3>
+          <p class="text-slate-600 text-sm sm:text-base mt-2 font-body">${summaryText}</p>
+          <div class="my-5 inline-flex items-center gap-4 bg-orange-50 border-2 border-orange-200 px-6 py-3 rounded-2xl">
+            <div>
+              <div class="text-xs text-slate-500">คะแนนที่ได้</div>
+              <div class="text-2xl font-extrabold text-orange-600">${score} / ${maxScore}</div>
+            </div>
+          </div>
+          <div class="flex flex-wrap justify-center gap-3">
+            <button onclick="openMission(${missionId})" class="px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700">
+              <i class="fa-solid fa-rotate-right mr-1"></i> เล่นอีกครั้ง
+            </button>
+            ${passed && nextId
+              ? `<button onclick="openMission(${nextId})" class="px-6 py-3 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold shadow-playful-orange btn-game">ไปด่านที่ ${nextId} <i class="fa-solid fa-arrow-right ml-1"></i></button>`
+              : ''}
+            ${passed && !nextId
+              ? `<button onclick="switchTab('report')" class="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-playful-mint btn-game">ดูรายงานสรุปผล <i class="fa-solid fa-chart-pie ml-1"></i></button>`
+              : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 9. FINANCIAL CLASSROOM (5 LESSONS)
+    // =========================================================================
+    function renderClassroom() {
+      const tabsEl = document.getElementById('lesson-tabs');
+      tabsEl.innerHTML = LESSONS.map(l => {
+        const active = l.id === currentLessonId;
+        const done = !!state.lessonsPassed[l.id];
+        return `
+          <button onclick="selectLesson(${l.id})" class="p-3.5 rounded-2xl border-2 text-left transition ${active ? 'bg-purple-600 text-white border-purple-700 shadow-md' : 'bg-white text-slate-700 border-purple-100 hover:border-purple-300'}">
+            <div class="flex items-center justify-between mb-1">
+              <i class="fa-solid ${l.icon} text-lg"></i>
+              ${done ? '<i class="fa-solid fa-circle-check text-emerald-400"></i>' : ''}
+            </div>
+            <div class="text-xs sm:text-sm font-bold leading-snug">${l.title}</div>
+          </button>
+        `;
+      }).join('');
+
+      const lesson = LESSONS.find(l => l.id === currentLessonId) || LESSONS[0];
+      const passed = !!state.lessonsPassed[lesson.id];
+
+      document.getElementById('lesson-content').innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Illustrated Concept Card -->
+          <div class="lg:col-span-5 bg-gradient-to-br ${lesson.color} rounded-3xl p-6 text-white text-center shadow-md">
+            <div class="w-24 h-24 mx-auto rounded-3xl bg-white/25 backdrop-blur-sm flex items-center justify-center text-5xl mb-4 animate-float">
+              <i class="fa-solid ${lesson.icon}"></i>
+            </div>
+            <h3 class="text-xl font-extrabold mb-2">${lesson.title}</h3>
+            <p class="text-sm text-white/95 font-body leading-relaxed">${lesson.summary}</p>
+            <div class="mt-4 bg-white/20 rounded-2xl p-3.5 text-left text-xs sm:text-sm font-body">
+              <div class="font-bold mb-1"><i class="fa-solid fa-lightbulb text-yellow-300 mr-1"></i> ตัวอย่างในชีวิตประจำวัน</div>
+              ${lesson.example}
+            </div>
+          </div>
+
+          <!-- Interactive Quiz & Mission Jump -->
+          <div class="lg:col-span-7 space-y-5">
+            <div class="bg-purple-50/70 border-2 border-purple-100 rounded-3xl p-5">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-extrabold text-purple-600 uppercase">คำถามท้ายบท (+20 คะแนน)</span>
+                ${passed ? '<span class="text-xs font-bold bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full"><i class="fa-solid fa-check mr-1"></i>ตอบถูกแล้ว</span>' : ''}
+              </div>
+              <h4 class="text-base sm:text-lg font-bold text-slate-800 mb-3">${lesson.quiz.question}</h4>
+              <div class="space-y-2.5">
+                ${lesson.quiz.options.map((opt, idx) => `
+                  <button onclick="answerLessonQuiz(${lesson.id}, ${idx})" class="w-full text-left p-3.5 rounded-2xl bg-white border-2 border-purple-100 hover:border-purple-400 font-semibold text-sm text-slate-700 transition">
+                    ${idx + 1}. ${opt}
+                  </button>
+                `).join('')}
+              </div>
+              <div id="lesson-quiz-feedback" class="mt-3"></div>
+            </div>
+
+            <button onclick="${lesson.isWalletLink ? "switchTab('wallet')" : `switchTab('missions'); openMission(${lesson.missionLink});`}"
+              class="w-full py-3.5 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold shadow-playful-orange btn-game flex items-center justify-center gap-2">
+              <i class="fa-solid fa-rocket"></i> ${lesson.missionLabel}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectLesson(id) {
+      currentLessonId = id;
+      renderClassroom();
+    }
+
+    function answerLessonQuiz(lessonId, optionIdx) {
+      const lesson = LESSONS.find(l => l.id === lessonId);
+      const isCorrect = optionIdx === lesson.quiz.correctIndex;
+      const fbEl = document.getElementById('lesson-quiz-feedback');
+
+      if (isCorrect) {
+        const firstTime = !state.lessonsPassed[lessonId];
+        state.lessonsPassed[lessonId] = true;
+        if (firstTime) {
+          state.score += 20;
+          state.coins += 15;
+          state.correctAnswers += 1;
+          saveState();
+          renderAll();
+          showToast('ตอบถูก! รับ +20 คะแนน และ +15 เหรียญ', 'success');
+        }
+        fbEl.innerHTML = `<div class="p-3 rounded-xl bg-emerald-100 text-emerald-800 text-sm font-semibold animate-pop">✅ ${lesson.quiz.explain}</div>`;
+      } else {
+        state.wrongAnswers += 1;
+        saveState();
+        fbEl.innerHTML = `<div class="p-3 rounded-xl bg-rose-100 text-rose-800 text-sm font-semibold animate-pop">❌ ยังไม่ถูกต้อง ลองอ่านเนื้อหาด้านซ้ายแล้วตอบใหม่อีกครั้งนะ!</div>`;
+      }
+    }
+
+    // =========================================================================
+    // 10. SUMMARY REPORT, CHARTS (CHART.JS) & CSV EXPORT
+    // =========================================================================
+    function renderReport() {
+      const fin = getFinanceSummary();
+      const lv = getPlayerLevel();
+      const completed = getCompletedMissionsCount();
+      const totalStars = getTotalStars();
+      const totalAns = state.correctAnswers + state.wrongAnswers;
+      const acc = totalAns > 0 ? Math.round((state.correctAnswers / totalAns) * 100) : 0;
+      const goalReached = fin.savings >= state.savingsGoal.target && state.savingsGoal.target > 0;
+
+      document.getElementById('rep-score').textContent = state.score;
+      document.getElementById('rep-level').textContent = `ระดับ ${lv.level}: ${lv.title}`;
+      document.getElementById('rep-missions').textContent = `${completed} / 5`;
+      document.getElementById('rep-stars').textContent = `${totalStars} / 15 ดาว • ${state.coins} เหรียญ`;
+      document.getElementById('rep-correct').textContent = state.correctAnswers;
+      document.getElementById('rep-wrong').textContent = state.wrongAnswers;
+      document.getElementById('rep-accuracy').textContent = `ความแม่นยำ ${acc}%`;
+      document.getElementById('rep-goal-status').textContent = goalReached ? '🎉 สำเร็จแล้ว!' : 'กำลังสะสม';
+      document.getElementById('rep-goal-detail').textContent = `${formatBaht(fin.savings)} / ${formatBaht(state.savingsGoal.target)}`;
+
+      // Personalized Behavioral Analysis
+      const saveRate = fin.totalIncome > 0 ? Math.round((fin.savings / fin.totalIncome) * 100) : 0;
+      const expRate = fin.totalIncome > 0 ? Math.round((fin.totalExpense / fin.totalIncome) * 100) : 0;
+
+      const strength = saveRate >= 20
+        ? `คุณมีวินัยการออมยอดเยี่ยม! ออมได้ถึง ${saveRate}% ของรายรับทั้งหมด`
+        : (acc >= 75 && totalAns > 0
+          ? `คุณมีความรู้และทักษะการตัดสินใจทางการเงินแม่นยำถึง ${acc}%`
+          : `คุณเริ่มต้นเรียนรู้และทดลองบริหารเงินได้อย่างกล้าหาญ`);
+
+      const improve = expRate > 70
+        ? `สัดส่วนรายจ่ายสูงถึง ${expRate}% ของรายรับ ลองทบทวนรายการ "ความต้องการ" ที่สามารถลดลงได้`
+        : (fin.savings === 0
+          ? `ยังไม่ได้เริ่มออมเงินเข้ากระปุก ลองแบ่งเงินอย่างน้อย 10% จากยอดคงเหลือมาออมดูนะ`
+          : (completed < 5
+            ? `ยังมีภารกิจอีก ${5 - completed} ด่านที่รอให้คุณไปพิชิตเพื่อเก็บความรู้ให้ครบทุกด้าน`
+            : `รักษาวินัยการจดบัญชีและระวังภัยมิจฉาชีพออนไลน์อย่างสม่ำเสมอ`));
+
+      const nextAdvice = goalReached
+        ? `คุณบรรลุเป้าหมาย "${state.savingsGoal.name}" แล้ว! ลองตั้งเป้าหมายการออมใหม่ที่ท้าทายขึ้น เช่น เงินสำรองฉุกเฉิน`
+        : `หากแบ่งออมเพิ่มอีกวันละ ${formatBaht(Math.ceil(Math.max(0, state.savingsGoal.target - fin.savings) / Math.max(1, state.savingsGoal.days)))} คุณจะพิชิตเป้าหมาย "${state.savingsGoal.name}" ได้ตามกำหนดแน่นอน!`;
+
+      document.getElementById('rep-analysis').innerHTML = `
+        <div class="bg-white rounded-2xl p-4 border border-emerald-200">
+          <div class="text-xs font-extrabold text-emerald-600 mb-1"><i class="fa-solid fa-star mr-1"></i> จุดเด่นของคุณ</div>
+          <p class="text-sm text-slate-700 font-body">${strength}</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-amber-200">
+          <div class="text-xs font-extrabold text-amber-600 mb-1"><i class="fa-solid fa-wrench mr-1"></i> พฤติกรรมที่ควรปรับปรุง</div>
+          <p class="text-sm text-slate-700 font-body">${improve}</p>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-purple-200">
+          <div class="text-xs font-extrabold text-purple-600 mb-1"><i class="fa-solid fa-compass mr-1"></i> คำแนะนำครั้งต่อไป</div>
+          <p class="text-sm text-slate-700 font-body">${nextAdvice}</p>
+        </div>
+      `;
+
+      // Badges Showcase
+      document.getElementById('rep-badges').innerHTML = BADGE_DEFS.map(b => {
+        const unlocked = state.badges.includes(b.id);
+        return `
+          <div class="rounded-2xl p-3 text-center border-2 transition ${unlocked ? 'border-yellow-300 bg-yellow-50/50' : 'border-slate-100 bg-slate-50 opacity-55 grayscale'}">
+            <div class="w-11 h-11 mx-auto rounded-2xl ${b.color} flex items-center justify-center text-xl mb-2">
+              <i class="fa-solid ${b.icon}"></i>
+            </div>
+            <div class="text-xs font-extrabold text-slate-800">${b.name}</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">${b.desc}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Render Chart.js only when report tab is visible
+      if (currentTab === 'report') {
+        renderCharts(fin);
+      }
+    }
+
+    function renderCharts(fin) {
+      // Chart 1: Bar Chart (Income vs Expense vs Savings)
+      const ctx1 = document.getElementById('chart-overview');
+      if (chartOverviewInstance) chartOverviewInstance.destroy();
+      chartOverviewInstance = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: ['รายรับรวม', 'รายจ่ายรวม', 'เงินออมสะสม', 'เงินคงเหลือ'],
+          datasets: [{
+            label: 'จำนวนเงิน (บาท)',
+            data: [fin.totalIncome, fin.totalExpense, fin.savings, fin.balance],
+            backgroundColor: ['#38BDF8', '#FB7185', '#A855F7', '#10B981'],
+            borderRadius: 12
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, ticks: { callback: v => '฿' + v } }
+          }
+        }
+      });
+
+      // Chart 2: Doughnut Chart (Expenses by Category)
+      const expMap = {};
+      state.transactions.filter(t => t.type === 'expense').forEach(t => {
+        expMap[t.category] = (expMap[t.category] || 0) + Number(t.amount);
+      });
+      const labels = Object.keys(expMap);
+      const values = Object.values(expMap);
+
+      const ctx2 = document.getElementById('chart-expenses');
+      const emptyEl = document.getElementById('chart-expenses-empty');
+      if (chartExpensesInstance) chartExpensesInstance.destroy();
+
+      if (labels.length === 0) {
+        ctx2.classList.add('hidden');
+        emptyEl.classList.remove('hidden');
+      } else {
+        ctx2.classList.remove('hidden');
+        emptyEl.classList.add('hidden');
+        chartExpensesInstance = new Chart(ctx2, {
+          type: 'doughnut',
+          data: {
+            labels,
+            datasets: [{
+              data: values,
+              backgroundColor: ['#FF7A00', '#10B981', '#FACC15', '#A855F7', '#38BDF8', '#FB7185', '#94A3B8'],
+              borderWidth: 2,
+              borderColor: '#FFFFFF'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { font: { family: 'Kanit' } } }
+            }
+          }
+        });
+      }
+    }
+
+    function exportToCSV() {
+      try {
+        const fin = getFinanceSummary();
+        const lv = getPlayerLevel();
+        const rows = [
+          ['=== สรุปผลการเรียนรู้ Money Mission: ภารกิจพิชิตเงิน ==='],
+          ['ชื่อผู้เล่น', state.playerName],
+          ['ระดับผู้เล่น', `ระดับ ${lv.level}: ${lv.title}`],
+          ['คะแนนรวม', state.score],
+          ['เหรียญรางวัล', state.coins],
+          ['ดาวสะสม', `${getTotalStars()}/15`],
+          ['ภารกิจที่ผ่าน', `${getCompletedMissionsCount()}/5`],
+          ['ตอบถูก', state.correctAnswers],
+          ['ตอบผิด', state.wrongAnswers],
+          ['รายรับรวม (บาท)', fin.totalIncome],
+          ['รายจ่ายรวม (บาท)', fin.totalExpense],
+          ['เงินออมสะสม (บาท)', fin.savings],
+          ['เงินคงเหลือ (บาท)', fin.balance],
+          ['เป้าหมายการออม', `${state.savingsGoal.name} (${state.savingsGoal.target} บาท)`],
+          [],
+          ['=== ประวัติรายรับ-รายจ่าย ==='],
+          ['วันที่', 'ประเภท', 'หมวดหมู่', 'รายละเอียด', 'จำนวนเงิน (บาท)']
+        ];
+
+        state.transactions.forEach(tx => {
+          rows.push([
+            tx.date,
+            tx.type === 'income' ? 'รายรับ' : 'รายจ่าย',
+            tx.category,
+            `"${String(tx.note).replace(/"/g, '""')}"`,
+            tx.amount
+          ]);
+        });
+
+        // Prepend UTF-8 BOM for proper Thai display in Excel
+        const csvContent = '\uFEFF' + rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `MoneyMission_${state.playerName}_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        showToast('ส่งออกไฟล์ CSV เรียบร้อยแล้ว!', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('เกิดข้อผิดพลาดในการส่งออกไฟล์ CSV', 'error');
+      }
+    }
+
+    // =========================================================================
+    // 11. INITIALIZATION
+    // =========================================================================
+    function renderAll() {
+      renderDashboard();
+      renderWallet();
+      renderMissionMap();
+      renderClassroom();
+      renderReport();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setTxType('income');
+      switchTab('dashboard');
+    });
+  </script>
+</body>
+</html>
